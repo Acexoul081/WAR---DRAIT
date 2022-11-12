@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" media="all" href="{{ url_for('static', filename='main/style.css')}}">
+</head>
+<body>
+    <div>DRAIT</div>
+    <div>Database writer in Realtime Analysis with Artificial Intelligence Training feeder</div>
+    <div>
+      {% for model in model_data %}
+        <a href="{{ url_for('show_metric', metric=model['id']) }}" class="card">
+          <div class="card__img-container">
+              <img class="card__img" src="//unsplash.it/400" alt="unsplash random image" />
+              <div class="card__tags">
+              <span class="card__tag">html</span>
+              <span class="card__tag">css</span>
+              <span class="card__tag">javascript</span>
+              </div>
+          </div>
+          <div class="card__body">
+              <h3 class="card__title">{{model['key']}}</h3>
+              <p class="card__date">Updated on
+              <time datetime="2022-10-24">Oct 24, 2022</time>
+              </p>
+              <p class="card__cta">Read more</p>
+          </div>
+        </a>
+      {% endfor %}
+    </div>
+</body>
+</html>

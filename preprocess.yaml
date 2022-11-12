@@ -1,0 +1,23 @@
+models:
+  - id: >-
+      MTkyLjE2OC4wLjEwMnxTaXRlc2NvcGV8RGlzay9GaWxlIFN5c3RlbS9bL2Rldi9zZGExICgvYm9vdCldL3BlcmNlbnQgZnVsbHxEaXNrfFBWRTEzUDEwMg==
+    key: >-
+      192.168.0.102|Sitescope|Disk/File System/[/dev/sda1 (/boot)]/percent
+      full|Disk|PVE13P102
+    timestep: 60
+    granularity: 1H
+    realtime_granularity: 1T
+    preprocess:
+      regression: >-
+        E:\BINUS\1s-Gs\Project\Digieboard+AI\SourceCode\kafka\preprocess/MTkyLjE2OC4wLjEwMnxTaXRlc2NvcGV8RGlzay9GaWxlIFN5c3RlbS9bL2Rldi9zZGExICgvYm9vdCldL3BlcmNlbnQgZnVsbHxEaXNrfFBWRTEzUDEwMg==/pickled_regressor.pkl
+      seasonality: weekly
+      z_score: >-
+        E:\BINUS\1s-Gs\Project\Digieboard+AI\SourceCode\kafka\preprocess/MTkyLjE2OC4wLjEwMnxTaXRlc2NvcGV8RGlzay9GaWxlIFN5c3RlbS9bL2Rldi9zZGExICgvYm9vdCldL3BlcmNlbnQgZnVsbHxEaXNrfFBWRTEzUDEwMg==/pickled_z_score.pkl
+      previous_value: >-
+        preprocess\MTkyLjE2OC4wLjEwMnxTaXRlc2NvcGV8RGlzay9GaWxlIFN5c3RlbS9bL2Rldi9zZGExICgvYm9vdCldL3BlcmNlbnQgZnVsbHxEaXNrfFBWRTEzUDEwMg==\previous_value.pkl
+      previous_y_hat: >-
+        E:\BINUS\1s-Gs\Project\Digieboard+AI\SourceCode\kafka\preprocess/MTkyLjE2OC4wLjEwMnxTaXRlc2NvcGV8RGlzay9GaWxlIFN5c3RlbS9bL2Rldi9zZGExICgvYm9vdCldL3BlcmNlbnQgZnVsbHxEaXNrfFBWRTEzUDEwMg==/pickled_y_hat.pkl
+      previous_y_test: >-
+        E:\BINUS\1s-Gs\Project\Digieboard+AI\SourceCode\kafka\preprocess/MTkyLjE2OC4wLjEwMnxTaXRlc2NvcGV8RGlzay9GaWxlIFN5c3RlbS9bL2Rldi9zZGExICgvYm9vdCldL3BlcmNlbnQgZnVsbHxEaXNrfFBWRTEzUDEwMg==/pickled_y_test.pkl
+      scale: >-
+        E:\BINUS\1s-Gs\Project\Digieboard+AI\SourceCode\kafka\preprocess/MTkyLjE2OC4wLjEwMnxTaXRlc2NvcGV8RGlzay9GaWxlIFN5c3RlbS9bL2Rldi9zZGExICgvYm9vdCldL3BlcmNlbnQgZnVsbHxEaXNrfFBWRTEzUDEwMg==/pickled_scaler.pkl
