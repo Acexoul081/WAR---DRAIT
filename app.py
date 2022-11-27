@@ -46,7 +46,7 @@ def show_metric(metric):
         fig = go.Figure()
         fig.add_trace(go.Scatter(x=temp.index, y=temp['cpu'], name='Time Series'))
         fig.add_trace(go.Scatter(x=anomalies.index, y=anomalies['cpu'], mode='markers', name='Anomaly'))
-        fig.update_layout(showlegend=True, title='Detected anomalies')
+        fig.update_layout(showlegend=True, title='Detected Anomalies')
         graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
 
         return render_template('metric.html', metric=metric, graphJSON=graphJSON)
