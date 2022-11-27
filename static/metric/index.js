@@ -9,6 +9,13 @@ function update_graph(metric){
     })
 }
 
+$('button').on('click', function(){
+    $('button').removeClass('selected');
+    $(this).addClass('selected');
+})
+
+$('#static-btn').addClass('selected');
+
 $('#static-btn').click(function(){
     // console.log(e)
     // get metric data here

@@ -5,21 +5,30 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Metric</title>
+    <link rel="stylesheet" media="all" href="{{ url_for('static', filename='metric/style.css')}}">
 </head>
 <body>
-    <div>{{metric}}</div>
-    <div class="chart" id="value">
+    <div class="header">
+        <a href="{{ url_for('main_page') }}" class="title">DRAIT</a>
+        <div class="description">Database writer in Realtime Analysis with Artificial Intelligence Training feeder</div>
     </div>
-    <div class="chart" id="loss">
+
+    <div class="model_detail">
+        <h3 class="model_title">Model Name : {{metric}}</h3>
+        <div class="chart" id="value"></div>
+        <div class="chart" id="loss"></div>
+        <div class="thresholding_option">
+            <!-- <button id="static-btn">Static Thresholding</button>
+            <button id="dynamic-btn">Dynamic Thresholding</button> -->
+            <button class='button -regular center' id="static-btn">Static Thresholding</button>
+            <button class='button -regular center' id="dynamic-btn">Dynamic Thresholding</button>
+        </div>
+        <div>
+            <div>Cron Manager</div>
+            <div>List of Model Version</div>
+        </div>
     </div>
-    <div>
-        <button id="static-btn">Static Thresholding</button>
-        <button id="dynamic-btn">Dynamic Thresholding</button>
-    </div>
-    <div>
-        <div>Cron Manager</div>
-        <div>List of Model Version</div>
-    </div>
+
 </body>
 
 <script type="text/javascript" src="https://cdn.plot.ly/plotly-latest.min.js"></script>
