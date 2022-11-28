@@ -4,6 +4,8 @@ models:
     key: >-
       192.168.0.102|Sitescope|Disk/File System/[/dev/sda1 (/boot)]/percent
       full|Disk|PVE13P102
+    name: utilization
+    tag: Sitescope|Server Infrastructure|DigieBoard|appdb02|DC|PVE13P102|172.16.11.174|CPU
     timestep: 60
     granularity: 1H
     realtime_granularity: 1T

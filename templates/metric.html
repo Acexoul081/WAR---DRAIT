@@ -34,18 +34,20 @@
 <script type="text/javascript" src="{{ url_for('static', filename='metric/index.js')}}"></script>
 
 <script type="text/javascript">
-    var graphs = {{graphJSON | safe}};
-    Plotly.plot('value',graphs,{});
-    Plotly.plot('loss',graphs,{});
+    var value_graph = {{valueGraph | safe}};
+    var loss_graph = {{lossGraph | safe}};
+    Plotly.plot('value',value_graph,{});
+    Plotly.plot('loss',loss_graph,{});
 
     var ajax_call = function() {
         $.ajax({
             type: "POST",
             url: window.location.toString(),
             success: function(result) {
-                update = {x: [JSON.parse(result.x), JSON.parse(result.x_anom)], y: [JSON.parse(result.y), JSON.parse(result.y_anom)]}
-                Plotly.update('value', update, {})
-                Plotly.update('loss', update, {})
+                value_update = {x: [JSON.parse(result.x_value), JSON.parse(result.x_value_anom)], y: [JSON.parse(result.y_value), JSON.parse(result.y_value_anom)]}
+                loss_update = {x: [JSON.parse(result.x_loss), JSON.parse(result.x_loss_anom)], y: [JSON.parse(result.y_loss), JSON.parse(result.y_loss_anom)]}
+                Plotly.update('value', value_update, {})
+                Plotly.update('loss', loss_update, {})
             }
         });
     };

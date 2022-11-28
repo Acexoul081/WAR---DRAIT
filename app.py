@@ -4,25 +4,42 @@ import json
 import plotly
 import plotly.express as px
 import plotly.graph_objects as go
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, desc, and_
 from sqlalchemy.orm import sessionmaker
+
 import pandas as pd
+
+import grpc
+from tensorflow_serving.apis import predict_pb2
+from tensorflow_serving.apis import prediction_service_pb2_grpc
+from tensorflow_serving.apis import model_service_pb2_grpc
+from tensorflow_serving.apis import get_model_status_pb2
+from tensorflow_serving.apis import get_model_metadata_pb2
+from google.protobuf.json_format import MessageToJson
+
 import db
 
+#setting app backend
 app = Flask(__name__)
 app.secret_key = 'any random string'
 
-first_index= 1
-last_index = 200
-dataset = pd.read_csv('server_monitoring_log.csv', parse_dates=['date'], names=['date', 'cpu', 'memory', 'disk'])
-dataset = dataset.set_index('date')
-del dataset['memory']
-del dataset['disk']
+model_metadata = {}
+with open("preprocess.yaml") as f:
+    config = yaml.safe_load(f)
+    for model in config['models']:
+        model_metadata[model['id']] = {
+            'name': model['name'] , 
+            'tag': model['tag'],
+            'key': model['key']
+        }
+
+#setting connection to tf-serving
+PORT = 8500
+channel = grpc.insecure_channel('localhost:{}'.format(PORT))
 
 @app.route('/')
 def main_page():
-    with open("preprocess.yaml") as f:
-        config = yaml.safe_load(f)
+    global config
     model_data = []
     if config['models'] is not None:
         for model in config['models']:
@@ -34,67 +51,102 @@ def main_page():
 
 @app.route('/metric/<metric>', methods=['GET', 'POST'])
 def show_metric(metric):
-    global first_index, last_index, dataset
+    global first_index, last_index
     if request.method == 'GET':
-        #dummy
-        temp = dataset[first_index:last_index]
-        threshold = get_static_threshold()
+        value, loss = get_value(metric)
         session['threshold'] = 'static'
 
-        anomalies = get_anomalies(metric, temp)
+        anomalies = get_anomalies(metric, loss)
+        value_anomalies = value.iloc[anomalies]
+        loss_anomalies = loss.iloc[anomalies]
+        # model_versions = get_model_version(metric)
 
-        fig = go.Figure()
-        fig.add_trace(go.Scatter(x=temp.index, y=temp['cpu'], name='Time Series'))
-        fig.add_trace(go.Scatter(x=anomalies.index, y=anomalies['cpu'], mode='markers', name='Anomaly'))
-        fig.update_layout(showlegend=True, title='Detected Anomalies')
-        graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
+        val_graph_json = create_value_graph(value, value_anomalies, 'metric_value')
+        loss_graph_json = create_value_graph(loss, loss_anomalies, 'loss')
 
-        return render_template('metric.html', metric=metric, graphJSON=graphJSON)
+        return render_template('metric.html', metric=metric, valueGraph=val_graph_json, lossGraph=loss_graph_json)
 
-    if request.method == 'POST':
-        # metric = request.args.get('data')
-        # Session = sessionmaker(bind=db.engine)
-        # session = Session()
+    if request.method == 'POST':   
+        value, loss = get_value(metric)
+        anomalies = get_anomalies(metric, loss)
+        value_anomalies = value.iloc[anomalies]
+        loss_anomalies = loss.iloc[anomalies]
 
-        # result = session.query(db.anomalies).all()
-    
-        first_index+=1
-        last_index+=1
-        temp = dataset[first_index:last_index]
+        print(value_anomalies)
+        print(loss_anomalies)
 
-        anomalies = get_anomalies(metric, temp)
-
-        # fig = go.Figure()
-        # fig.add_trace(go.Scatter(x=test_score_df.index, y=test_score_df['value'], name='Time Series'))
-        # fig.add_trace(go.Scatter(x=anomalies.index, y=anomalies['value'], mode='markers', name='Anomaly'))
-        # fig.add_trace(go.Scatter(x=temp.index, y=temp['cpu'], name='Time Series'))
-        # fig.update_layout(showlegend=True, title='Detected anomalies')
-        # graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
-
-        temp_datetime = [i.to_pydatetime() for i in temp.index]
-        temp_datetime_anom = [i.to_pydatetime() for i in anomalies.index]
+        value_datetime = [i.to_pydatetime() for i in value['metric_datetime']]
+        loss_datetime = [i.to_pydatetime() for i in loss['metric_datetime']]
+        #ganti universal anomalies ntar
+        value_anom_datetime = [i.to_pydatetime() for i in value_anomalies['metric_datetime']]
+        loss_anom_datetime = [i.to_pydatetime() for i in loss_anomalies['metric_datetime']]
         return {
-            'x':json.dumps(temp_datetime, default=str),
-            'y': json.dumps(temp['cpu'].values.tolist()), 
-            'x_anom': json.dumps(temp_datetime_anom, default=str), 
-            'y_anom':json.dumps(anomalies['cpu'].values.tolist())
+            'x_value':json.dumps(value_datetime, default=str),
+            'y_value': json.dumps(value['metric_value'].values.tolist()), 
+            'x_value_anom': json.dumps(value_anom_datetime, default=str), 
+            'y_value_anom':json.dumps(value_anomalies['metric_value'].values.tolist()),
+            'x_loss':json.dumps(loss_datetime, default=str),
+            'y_loss': json.dumps(loss['loss'].values.tolist()), 
+            'x_loss_anom': json.dumps(loss_anom_datetime, default=str), 
+            'y_loss_anom':json.dumps(loss_anomalies['loss'].values.tolist())
         }
+
+def create_value_graph(dataset, anomalies, target_column):
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=dataset['metric_datetime'], y=dataset[target_column], name='Value Time Series'))
+    if target_column == 'loss':
+        fig.add_trace(go.Scatter(x=anomalies['metric_datetime'], y=anomalies[target_column], mode='markers', name='Anomaly'))
+    fig.update_layout(showlegend=True, title='Detected anomalies')
+    graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
+    return graphJSON
+
+def get_value(metric):
+    Session = sessionmaker(bind=db.engine)
+    session = Session()
+    loss = session.query(db.losses).filter(db.losses.metric_key == model_metadata[metric]['key']).order_by(desc(db.losses.timestamp)).limit(200)
+    value = session.query(db.metrics).filter(
+        and_(
+            db.metrics.tag == model_metadata[metric]['tag'], 
+            db.metrics.metric_name == model_metadata[metric]['name'])
+        ).order_by(desc(db.metrics.metric_datetime)).limit(200)
+
+    loss = pd.read_sql(loss.statement, loss.session.bind)
+    value = pd.read_sql(value.statement, value.session.bind)
+    loss.rename(columns = {'timestamp':'metric_datetime'}, inplace = True)
+    return value,loss
+    #buat yg metric ke transaction
+
+def get_model_version(metric):
+    global PORT, channel
+    stub = prediction_service_pb2_grpc.PredictionServiceStub(channel)
+
+    request = get_model_status_pb2.GetModelStatusRequest()
+    request.model_spec.name = metric
+    result = stub.GetModelStatus(request, 5)  # 5 secs timeout
+    print(f"Model status: {result}")
+    
+    request = get_model_metadata_pb2.GetModelMetadataRequest()
+    request.model_spec.name = metric
+    request.metadata_field.append("signature_def")
+    result = stub.GetModelMetadata(request, 5)  # 5 secs timeout
+    result = json.loads(MessageToJson(result))
+    print(f"Model metadata: {result}")
 
 def get_anomalies(metric, dataset):
     if session['threshold'] == 'static':
         threshold = get_static_threshold()
-        dataset['anomaly'] = dataset['cpu'].ge(threshold)
+        dataset['anomaly'] = dataset['loss'].ge(threshold)
     elif session['threshold'] == 'dynamic':
         threshold = get_dynamic_threshold()
         dataset['anomaly']=False
         print(threshold)
         for start_index, end_index in threshold:
             #validasi index outofbound
-            print(start_index)
-            print(end_index)
             dataset['anomaly'][start_index: end_index] = True
-
-    anomalies = dataset.loc[dataset['anomaly'] == True]
+    
+    #anomali samain antara value df sama loss df
+    #ntar ambil anomali per datetime
+    anomalies = dataset.loc[dataset['anomaly'] == True].index
     return anomalies
 
 def get_models_version(metric):
@@ -116,7 +168,7 @@ def change_static_threshold():
     # anomalies = test_score_df.loc[test_score_df['anomaly'] == True]
 
 def get_static_threshold():
-    static_threshold = 50
+    static_threshold = 0.7
     return static_threshold
 
 @app.route('/dynamic', methods=['POST'])
@@ -125,16 +177,9 @@ def change_dynamic_threshold():
     session['threshold'] = 'dynamic'
     return '', 204
     # #query threshold data from db
-    # #create figure in json with anomaly by dynamic threshold
-    # test_score_df = pd.DataFrame(df_test[TIME_STEPS:])
-    # test_score_df['loss'] = test_mae_loss
-    # test_score_df['anomaly'] = test_score_df['loss'] > test_score_df['threshold']
-    # test_score_df['Close'] = df_test[TIME_STEPS:]['value']
-
-    # anomalies = test_score_df.loc[test_score_df['anomaly'] == True]
 
 def get_dynamic_threshold():
-    dynamic_threshold = [('2022-11-01 21:15:01', '2022-11-01 21:20:01')]
+    dynamic_threshold = [('2022-11-01 21:15:01', '2022-11-01 21:30:01')]
     return dynamic_threshold
 
 @app.route('/about-us')
