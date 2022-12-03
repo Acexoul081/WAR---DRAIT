@@ -1,4 +1,3 @@
-from curses import echo
 from datetime import datetime
 from sqlalchemy import create_engine
 from sqlalchemy import Column, String, Integer, Float, Boolean, DateTime
@@ -89,4 +88,19 @@ class metrics(base):
         self.created_by = created_by
         self.created_time = datetime.now()
 
-# base.metadata.create_all(engine)
+class thresholds(base):
+    __tablename__='udd_thresholds'
+    metric_key = Column(String(255), primary_key=True)
+    value = Column(Float)
+    created_by = Column(String(255))
+    created_time = Column(DateTime)
+    updated_by = Column(String(255))
+    updated_time = Column(DateTime)
+
+
+    def __init__(self, metric_key, value, created_by):
+        self.metric_key = metric_key
+        self.value = value
+        self.created_by = created_by
+        self.created_time = datetime.now()
+base.metadata.create_all(engine)

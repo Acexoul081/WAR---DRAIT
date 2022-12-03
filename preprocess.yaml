@@ -1,9 +1,124 @@
 models:
   - id: >-
-      MTkyLjE2OC4wLjEwMnxTaXRlc2NvcGV8RGlzay9GaWxlIFN5c3RlbS9bL2Rldi9zZGExICgvYm9vdCldL3BlcmNlbnQgZnVsbHxEaXNrfFBWRTEzUDEwMg==
+      MTcyLjE2LjExLjE3MnxTaXRlc2NvcGV8dXRpbGl6YXRpb258Q1BVfFBWRTEzUDEwMQ==
     key: >-
-      192.168.0.102|Sitescope|Disk/File System/[/dev/sda1 (/boot)]/percent
-      full|Disk|PVE13P102
+      172.16.11.172|Sitescope|utilization|CPU|PVE13P101
+    name: utilization
+    tag: Sitescope|Server Infrastructure|DigieBoard|appweb02|DC|PVE13P101|172.16.11.172|CPU
+    timestep: 60
+    granularity: 1H
+    realtime_granularity: 1T
+    preprocess:
+      regression: >-
+        preprocess/MTcyLjE2LjExLjE3MnxTaXRlc2NvcGV8dXRpbGl6YXRpb258Q1BVfFBWRTEzUDEwMQ==/pickled_regressor.pkl
+      previous_value: >-
+        preprocess/MTcyLjE2LjExLjE3MnxTaXRlc2NvcGV8dXRpbGl6YXRpb258Q1BVfFBWRTEzUDEwMQ==/previous_value.pkl
+      previous_y_hat: >-
+        preprocess/MTcyLjE2LjExLjE3MnxTaXRlc2NvcGV8dXRpbGl6YXRpb258Q1BVfFBWRTEzUDEwMQ==/pickled_y_hat.pkl
+      previous_y_test: >-
+        preprocess/MTcyLjE2LjExLjE3MnxTaXRlc2NvcGV8dXRpbGl6YXRpb258Q1BVfFBWRTEzUDEwMQ==/pickled_y_test.pkl
+      scale: >-
+        preprocess/MTcyLjE2LjExLjE3MnxTaXRlc2NvcGV8dXRpbGl6YXRpb258Q1BVfFBWRTEzUDEwMQ==/pickled_scaler.pkl
+  # - id: >-
+  #     MTcyLjE2LjExLjE3MnxTaXRlc2NvcGV8RGlzay9GaWxlIFN5c3RlbS9bSGFyZGRpc2tWb2x1bWUxXS9wZXJjZW50IGZ1bGx8RGlza3xQVkUxM1AxMDE=
+  #   key: >-
+  #     172.16.11.172|Sitescope|Disk/File System/[HarddiskVolume1]/percent full|Disk|PVE13P101
+  #   timestep: 60
+  #   granularity: 1H
+  #   realtime_granularity: 1T
+  #   preprocess:
+  #     regression: >-
+  #       preprocess/MTcyLjE2LjExLjE3MnxTaXRlc2NvcGV8RGlzay9GaWxlIFN5c3RlbS9bSGFyZGRpc2tWb2x1bWUxXS9wZXJjZW50IGZ1bGx8RGlza3xQVkUxM1AxMDE=/pickled_regressor.pkl
+  #     previous_value: >-
+  #       preprocess/MTcyLjE2LjExLjE3MnxTaXRlc2NvcGV8dXRpbGl6YXRpb258Q1BVfFBWRTEzUDEwMQ==/previous_value.pkl
+  #     previous_y_hat: >-
+  #       preprocess/MTcyLjE2LjExLjE3MnxTaXRlc2NvcGV8RGlzay9GaWxlIFN5c3RlbS9bSGFyZGRpc2tWb2x1bWUxXS9wZXJjZW50IGZ1bGx8RGlza3xQVkUxM1AxMDE=/pickled_y_hat.pkl
+  #     previous_y_test: >-
+  #       preprocess/MTcyLjE2LjExLjE3MnxTaXRlc2NvcGV8RGlzay9GaWxlIFN5c3RlbS9bSGFyZGRpc2tWb2x1bWUxXS9wZXJjZW50IGZ1bGx8RGlza3xQVkUxM1AxMDE=/pickled_y_test.pkl
+  #     scale: >-
+  #       preprocess/MTcyLjE2LjExLjE3MnxTaXRlc2NvcGV8RGlzay9GaWxlIFN5c3RlbS9bSGFyZGRpc2tWb2x1bWUxXS9wZXJjZW50IGZ1bGx8RGlza3xQVkUxM1AxMDE=/pickled_scaler.pkl
+  - id: >-
+      MTcyLjE2LjExLjE3MnxTaXRlc2NvcGV8RGlzay9GaWxlIFN5c3RlbS9bQ10vcGVyY2VudCBmdWxsfERpc2t8UFZFMTNQMTAx
+    key: >-
+      172.16.11.172|Sitescope|Disk/File System/[C]/percent full|Disk|PVE13P101
+    name: Disk/File System/[C]/percent full
+    tag: Sitescope|Server Infrastructure|DigieBoard|appweb02|DC|PVE13P101|172.16.11.172|Disk
+    timestep: 60
+    granularity: 1H
+    realtime_granularity: 1T
+    preprocess:
+      regression: >-
+        preprocess/MTcyLjE2LjExLjE3MnxTaXRlc2NvcGV8RGlzay9GaWxlIFN5c3RlbS9bQ10vcGVyY2VudCBmdWxsfERpc2t8UFZFMTNQMTAx/pickled_regressor.pkl
+      previous_value: >-
+        preprocess/MTcyLjE2LjExLjE3MnxTaXRlc2NvcGV8RGlzay9GaWxlIFN5c3RlbS9bQ10vcGVyY2VudCBmdWxsfERpc2t8UFZFMTNQMTAx/previous_value.pkl
+      previous_y_hat: >-
+        preprocess/MTcyLjE2LjExLjE3MnxTaXRlc2NvcGV8RGlzay9GaWxlIFN5c3RlbS9bQ10vcGVyY2VudCBmdWxsfERpc2t8UFZFMTNQMTAx/pickled_y_hat.pkl
+      previous_y_test: >-
+        preprocess/MTcyLjE2LjExLjE3MnxTaXRlc2NvcGV8RGlzay9GaWxlIFN5c3RlbS9bQ10vcGVyY2VudCBmdWxsfERpc2t8UFZFMTNQMTAx/pickled_y_test.pkl
+      scale: >-
+        preprocess/MTcyLjE2LjExLjE3MnxTaXRlc2NvcGV8RGlzay9GaWxlIFN5c3RlbS9bQ10vcGVyY2VudCBmdWxsfERpc2t8UFZFMTNQMTAx/pickled_scaler.pkl
+  - id: >-
+      MTcyLjE2LjExLjE3M3xTaXRlc2NvcGV8dXRpbGl6YXRpb258Q1BVfFBWRTEzUDEwNA==
+    key: >-
+      172.16.11.173|Sitescope|utilization|CPU|PVE13P104
+    name: utilization
+    tag: Sitescope|Server Infrastructure|DigieBoard|appmid02|DC|PVE13P104|172.16.11.173|CPU
+    timestep: 60
+    granularity: 1H
+    realtime_granularity: 1T
+    preprocess:
+      regression: >-
+        preprocess/MTcyLjE2LjExLjE3M3xTaXRlc2NvcGV8dXRpbGl6YXRpb258Q1BVfFBWRTEzUDEwNA==/pickled_regressor.pkl
+      previous_value: >-
+        preprocess/MTcyLjE2LjExLjE3M3xTaXRlc2NvcGV8dXRpbGl6YXRpb258Q1BVfFBWRTEzUDEwNA==/previous_value.pkl
+      previous_y_hat: >-
+        preprocess/MTcyLjE2LjExLjE3M3xTaXRlc2NvcGV8dXRpbGl6YXRpb258Q1BVfFBWRTEzUDEwNA==/pickled_y_hat.pkl
+      previous_y_test: >-
+        preprocess/MTcyLjE2LjExLjE3M3xTaXRlc2NvcGV8dXRpbGl6YXRpb258Q1BVfFBWRTEzUDEwNA==/pickled_y_test.pkl
+      scale: >-
+        preprocess/MTcyLjE2LjExLjE3M3xTaXRlc2NvcGV8dXRpbGl6YXRpb258Q1BVfFBWRTEzUDEwNA==/pickled_scaler.pkl
+  # - id: >-
+  #     MTcyLjE2LjExLjE3M3xTaXRlc2NvcGV8RGlzay9GaWxlIFN5c3RlbS9bSGFyZGRpc2tWb2x1bWUxXS9wZXJjZW50IGZ1bGx8RGlza3xQVkUxM1AxMDQ=
+  #   key: >-
+  #     172.16.11.173|Sitescope|Disk/File System/[HarddiskVolume1]/percent full|Disk|PVE13P104
+  #   timestep: 60
+  #   granularity: 1H
+  #   realtime_granularity: 1T
+  #   preprocess:
+  #     regression: >-
+  #       preprocess/MTcyLjE2LjExLjE3M3xTaXRlc2NvcGV8RGlzay9GaWxlIFN5c3RlbS9bSGFyZGRpc2tWb2x1bWUxXS9wZXJjZW50IGZ1bGx8RGlza3xQVkUxM1AxMDQ=/pickled_regressor.pkl
+  #     previous_value: >-
+  #       preprocess/MTcyLjE2LjExLjE3M3xTaXRlc2NvcGV8RGlzay9GaWxlIFN5c3RlbS9bSGFyZGRpc2tWb2x1bWUxXS9wZXJjZW50IGZ1bGx8RGlza3xQVkUxM1AxMDQ=/previous_value.pkl
+  #     previous_y_hat: >-
+  #       preprocess/MTcyLjE2LjExLjE3M3xTaXRlc2NvcGV8RGlzay9GaWxlIFN5c3RlbS9bSGFyZGRpc2tWb2x1bWUxXS9wZXJjZW50IGZ1bGx8RGlza3xQVkUxM1AxMDQ=/pickled_y_hat.pkl
+  #     previous_y_test: >-
+  #       preprocess/MTcyLjE2LjExLjE3M3xTaXRlc2NvcGV8RGlzay9GaWxlIFN5c3RlbS9bSGFyZGRpc2tWb2x1bWUxXS9wZXJjZW50IGZ1bGx8RGlza3xQVkUxM1AxMDQ=/pickled_y_test.pkl
+  #     scale: >-
+  #       preprocess/MTcyLjE2LjExLjE3M3xTaXRlc2NvcGV8RGlzay9GaWxlIFN5c3RlbS9bSGFyZGRpc2tWb2x1bWUxXS9wZXJjZW50IGZ1bGx8RGlza3xQVkUxM1AxMDQ=/pickled_scaler.pkl
+  - id: >-
+      MTcyLjE2LjExLjE3M3xTaXRlc2NvcGV8RGlzay9GaWxlIFN5c3RlbS9bQ10vcGVyY2VudCBmdWxsfERpc2t8UFZFMTNQMTA0
+    key: >-
+      172.16.11.173|Sitescope|Disk/File System/[C]/percent full|Disk|PVE13P104
+    name: Disk/File System/[C]/percent full
+    tag: Sitescope|Server Infrastructure|DigieBoard|appmid02|DC|PVE13P104|172.16.11.173|Disk
+    timestep: 60
+    granularity: 1H
+    realtime_granularity: 1T
+    preprocess:
+      regression: >-
+        preprocess/MTcyLjE2LjExLjE3M3xTaXRlc2NvcGV8RGlzay9GaWxlIFN5c3RlbS9bQ10vcGVyY2VudCBmdWxsfERpc2t8UFZFMTNQMTA0/pickled_regressor.pkl
+      previous_value: >-
+        preprocess/MTcyLjE2LjExLjE3M3xTaXRlc2NvcGV8RGlzay9GaWxlIFN5c3RlbS9bQ10vcGVyY2VudCBmdWxsfERpc2t8UFZFMTNQMTA0/previous_value.pkl
+      previous_y_hat: >-
+        preprocess/MTcyLjE2LjExLjE3M3xTaXRlc2NvcGV8RGlzay9GaWxlIFN5c3RlbS9bQ10vcGVyY2VudCBmdWxsfERpc2t8UFZFMTNQMTA0/pickled_y_hat.pkl
+      previous_y_test: >-
+        preprocess/MTcyLjE2LjExLjE3M3xTaXRlc2NvcGV8RGlzay9GaWxlIFN5c3RlbS9bQ10vcGVyY2VudCBmdWxsfERpc2t8UFZFMTNQMTA0/pickled_y_test.pkl
+      scale: >-
+        preprocess/MTcyLjE2LjExLjE3M3xTaXRlc2NvcGV8RGlzay9GaWxlIFN5c3RlbS9bQ10vcGVyY2VudCBmdWxsfERpc2t8UFZFMTNQMTA0/pickled_scaler.pkl
+  - id: >-
+      MTcyLjE2LjExLjE3NHxTaXRlc2NvcGV8dXRpbGl6YXRpb258Q1BVfFBWRTEzUDEwMg==
+    key: >-
+      172.16.11.174|Sitescope|utilization|CPU|PVE13P102
     name: utilization
     tag: Sitescope|Server Infrastructure|DigieBoard|appdb02|DC|PVE13P102|172.16.11.174|CPU
     timestep: 60
@@ -11,15 +126,50 @@ models:
     realtime_granularity: 1T
     preprocess:
       regression: >-
-        E:\BINUS\1s-Gs\Project\Digieboard+AI\SourceCode\kafka\preprocess/MTkyLjE2OC4wLjEwMnxTaXRlc2NvcGV8RGlzay9GaWxlIFN5c3RlbS9bL2Rldi9zZGExICgvYm9vdCldL3BlcmNlbnQgZnVsbHxEaXNrfFBWRTEzUDEwMg==/pickled_regressor.pkl
-      seasonality: weekly
-      z_score: >-
-        E:\BINUS\1s-Gs\Project\Digieboard+AI\SourceCode\kafka\preprocess/MTkyLjE2OC4wLjEwMnxTaXRlc2NvcGV8RGlzay9GaWxlIFN5c3RlbS9bL2Rldi9zZGExICgvYm9vdCldL3BlcmNlbnQgZnVsbHxEaXNrfFBWRTEzUDEwMg==/pickled_z_score.pkl
+        preprocess/MTcyLjE2LjExLjE3NHxTaXRlc2NvcGV8dXRpbGl6YXRpb258Q1BVfFBWRTEzUDEwMg==/pickled_regressor.pkl
       previous_value: >-
-        preprocess\MTkyLjE2OC4wLjEwMnxTaXRlc2NvcGV8RGlzay9GaWxlIFN5c3RlbS9bL2Rldi9zZGExICgvYm9vdCldL3BlcmNlbnQgZnVsbHxEaXNrfFBWRTEzUDEwMg==\previous_value.pkl
+        preprocess/MTcyLjE2LjExLjE3NHxTaXRlc2NvcGV8dXRpbGl6YXRpb258Q1BVfFBWRTEzUDEwMg==/previous_value.pkl
       previous_y_hat: >-
-        E:\BINUS\1s-Gs\Project\Digieboard+AI\SourceCode\kafka\preprocess/MTkyLjE2OC4wLjEwMnxTaXRlc2NvcGV8RGlzay9GaWxlIFN5c3RlbS9bL2Rldi9zZGExICgvYm9vdCldL3BlcmNlbnQgZnVsbHxEaXNrfFBWRTEzUDEwMg==/pickled_y_hat.pkl
+        preprocess/MTcyLjE2LjExLjE3NHxTaXRlc2NvcGV8dXRpbGl6YXRpb258Q1BVfFBWRTEzUDEwMg==/pickled_y_hat.pkl
       previous_y_test: >-
-        E:\BINUS\1s-Gs\Project\Digieboard+AI\SourceCode\kafka\preprocess/MTkyLjE2OC4wLjEwMnxTaXRlc2NvcGV8RGlzay9GaWxlIFN5c3RlbS9bL2Rldi9zZGExICgvYm9vdCldL3BlcmNlbnQgZnVsbHxEaXNrfFBWRTEzUDEwMg==/pickled_y_test.pkl
+        preprocess/MTcyLjE2LjExLjE3NHxTaXRlc2NvcGV8dXRpbGl6YXRpb258Q1BVfFBWRTEzUDEwMg==/pickled_y_test.pkl
       scale: >-
-        E:\BINUS\1s-Gs\Project\Digieboard+AI\SourceCode\kafka\preprocess/MTkyLjE2OC4wLjEwMnxTaXRlc2NvcGV8RGlzay9GaWxlIFN5c3RlbS9bL2Rldi9zZGExICgvYm9vdCldL3BlcmNlbnQgZnVsbHxEaXNrfFBWRTEzUDEwMg==/pickled_scaler.pkl
+        preprocess/MTcyLjE2LjExLjE3NHxTaXRlc2NvcGV8dXRpbGl6YXRpb258Q1BVfFBWRTEzUDEwMg==/pickled_scaler.pkl
+  # - id: >-
+  #     MTcyLjE2LjExLjE3NHxTaXRlc2NvcGV8RGlzay9GaWxlIFN5c3RlbS9bSGFyZGRpc2tWb2x1bWUxXS9wZXJjZW50IGZ1bGx8RGlza3xQVkUxM1AxMDI=
+  #   key: >-
+  #     172.16.11.174|Sitescope|Disk/File System/[HarddiskVolume1]/percent full|Disk|PVE13P102
+  #   timestep: 60
+  #   granularity: 1H
+  #   realtime_granularity: 1T
+  #   preprocess:
+  #     regression: >-
+  #       preprocess/MTcyLjE2LjExLjE3NHxTaXRlc2NvcGV8RGlzay9GaWxlIFN5c3RlbS9bSGFyZGRpc2tWb2x1bWUxXS9wZXJjZW50IGZ1bGx8RGlza3xQVkUxM1AxMDI=/pickled_regressor.pkl
+  #     previous_value: >-
+  #       preprocess/MTcyLjE2LjExLjE3NHxTaXRlc2NvcGV8RGlzay9GaWxlIFN5c3RlbS9bSGFyZGRpc2tWb2x1bWUxXS9wZXJjZW50IGZ1bGx8RGlza3xQVkUxM1AxMDI=/previous_value.pkl
+  #     previous_y_hat: >-
+  #       preprocess/MTcyLjE2LjExLjE3NHxTaXRlc2NvcGV8RGlzay9GaWxlIFN5c3RlbS9bSGFyZGRpc2tWb2x1bWUxXS9wZXJjZW50IGZ1bGx8RGlza3xQVkUxM1AxMDI=/pickled_y_hat.pkl
+  #     previous_y_test: >-
+  #       preprocess/MTcyLjE2LjExLjE3NHxTaXRlc2NvcGV8RGlzay9GaWxlIFN5c3RlbS9bSGFyZGRpc2tWb2x1bWUxXS9wZXJjZW50IGZ1bGx8RGlza3xQVkUxM1AxMDI=/pickled_y_test.pkl
+  #     scale: >-
+  #       preprocess/MTcyLjE2LjExLjE3NHxTaXRlc2NvcGV8RGlzay9GaWxlIFN5c3RlbS9bSGFyZGRpc2tWb2x1bWUxXS9wZXJjZW50IGZ1bGx8RGlza3xQVkUxM1AxMDI=/pickled_scaler.pkl
+  - id: >-
+      MTcyLjE2LjExLjE3NHxTaXRlc2NvcGV8RGlzay9GaWxlIFN5c3RlbS9bQ10vcGVyY2VudCBmdWxsfERpc2t8UFZFMTNQMTAy
+    key: >-
+      172.16.11.174|Sitescope|Disk/File System/[C]/percent full|Disk|PVE13P102
+    name: Disk/File System/[C]/percent full
+    tag: Sitescope|Server Infrastructure|DigieBoard|appdb02|DC|PVE13P102|172.16.11.174|Disk
+    timestep: 60
+    granularity: 1H
+    realtime_granularity: 1T
+    preprocess:
+      regression: >-
+        preprocess/MTcyLjE2LjExLjE3NHxTaXRlc2NvcGV8RGlzay9GaWxlIFN5c3RlbS9bQ10vcGVyY2VudCBmdWxsfERpc2t8UFZFMTNQMTAy/pickled_regressor.pkl
+      previous_value: >-
+        preprocess/MTcyLjE2LjExLjE3NHxTaXRlc2NvcGV8RGlzay9GaWxlIFN5c3RlbS9bQ10vcGVyY2VudCBmdWxsfERpc2t8UFZFMTNQMTAy/previous_value.pkl
+      previous_y_hat: >-
+        preprocess/MTcyLjE2LjExLjE3NHxTaXRlc2NvcGV8RGlzay9GaWxlIFN5c3RlbS9bQ10vcGVyY2VudCBmdWxsfERpc2t8UFZFMTNQMTAy/pickled_y_hat.pkl
+      previous_y_test: >-
+        preprocess/MTcyLjE2LjExLjE3NHxTaXRlc2NvcGV8RGlzay9GaWxlIFN5c3RlbS9bQ10vcGVyY2VudCBmdWxsfERpc2t8UFZFMTNQMTAy/pickled_y_test.pkl
+      scale: >-
+        preprocess/MTcyLjE2LjExLjE3NHxTaXRlc2NvcGV8RGlzay9GaWxlIFN5c3RlbS9bQ10vcGVyY2VudCBmdWxsfERpc2t8UFZFMTNQMTAy/pickled_scaler.pkl

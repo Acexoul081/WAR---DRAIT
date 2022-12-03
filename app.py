@@ -28,7 +28,7 @@ with open("preprocess.yaml") as f:
     config = yaml.safe_load(f)
     for model in config['models']:
         model_metadata[model['id']] = {
-            'name': model['name'] , 
+            'name': model['name'], 
             'tag': model['tag'],
             'key': model['key']
         }
@@ -36,6 +36,7 @@ with open("preprocess.yaml") as f:
 #setting connection to tf-serving
 PORT = 8500
 channel = grpc.insecure_channel('localhost:{}'.format(PORT))
+Session = sessionmaker(bind=db.engine)
 
 @app.route('/')
 def main_page():
@@ -54,7 +55,7 @@ def show_metric(metric):
     global first_index, last_index
     if request.method == 'GET':
         value, loss = get_value(metric)
-        session['threshold'] = 'static'
+        change_static_threshold()
 
         anomalies = get_anomalies(metric, loss)
         value_anomalies = value.iloc[anomalies]
@@ -101,10 +102,9 @@ def create_value_graph(dataset, anomalies, target_column):
     return graphJSON
 
 def get_value(metric):
-    Session = sessionmaker(bind=db.engine)
-    session = Session()
-    loss = session.query(db.losses).filter(db.losses.metric_key == model_metadata[metric]['key']).order_by(desc(db.losses.timestamp)).limit(200)
-    value = session.query(db.metrics).filter(
+    db_session = Session()
+    loss = db_session.query(db.losses).filter(db.losses.metric_key == model_metadata[metric]['key']).order_by(desc(db.losses.timestamp)).limit(200)
+    value = db_session.query(db.metrics).filter(
         and_(
             db.metrics.tag == model_metadata[metric]['tag'], 
             db.metrics.metric_name == model_metadata[metric]['name'])
@@ -155,21 +155,17 @@ def get_models_version(metric):
 @app.route('/static', methods=['POST'])
 def change_static_threshold():
     metric = request.args.get('data')
+    db_session = Session()
     session['threshold'] = 'static'
-    return '', 204
-    #query threshold data from db
-    #create figure in json with anomaly by static threshold
-    # test_score_df = pd.DataFrame(df_test[TIME_STEPS:])
-    # test_score_df['loss'] = test_mae_loss
-    # test_score_df['threshold'] = threshold
-    # test_score_df['anomaly'] = test_score_df['loss'] > test_score_df['threshold']
-    # test_score_df['Close'] = df_test[TIME_STEPS:]['value']
 
-    # anomalies = test_score_df.loc[test_score_df['anomaly'] == True]
+    threshold = db_session.query(db.thresholds).filter(db.thresholds.metric_key == model_metadata[metric]['key'])
+
+    threshold = pd.read_sql(threshold.statement, threshold.session.bind)
+    session['threshold_value'] = threshold['value']
+    return '', 204
 
 def get_static_threshold():
-    static_threshold = 0.7
-    return static_threshold
+    return session['threshold_value']
 
 @app.route('/dynamic', methods=['POST'])
 def change_dynamic_threshold():
@@ -178,8 +174,10 @@ def change_dynamic_threshold():
     return '', 204
     # #query threshold data from db
 
-def get_dynamic_threshold():
-    dynamic_threshold = [('2022-11-01 21:15:01', '2022-11-01 21:30:01')]
+def get_dynamic_threshold(metric):
+    db_session = Session()
+    threshold_query = db_session.query(db.anomalies).filter(db.anomalies.metric_key == model_metadata[metric]['key']).order_by(desc(db.anomalies.start_time)).limit(200) #ambil sampe jamber
+    dynamic_threshold = pd.read_sql(threshold_query.statement, threshold_query.session.bind)
     return dynamic_threshold
 
 @app.route('/about-us')
