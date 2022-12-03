@@ -45,9 +45,6 @@ def main_page():
     if config['models'] is not None:
         for model in config['models']:
             model_data.append({'key':model['key'], 'id':model['id']})
-            model_data.append({'key':model['key'], 'id':model['id']})
-            model_data.append({'key':model['key'], 'id':model['id']})
-            model_data.append({'key':model['key'], 'id':model['id']})
     return render_template('main.html', model_data=model_data)
 
 @app.route('/metric/<metric>', methods=['GET', 'POST'])
