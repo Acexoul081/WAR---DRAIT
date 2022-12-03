@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, session
+from flask import Flask, render_template, request, session, jsonify
 import yaml
 import json
 import plotly
@@ -52,19 +52,19 @@ def show_metric(metric):
     global first_index, last_index
     if request.method == 'GET':
         value, loss = get_value(metric)
-        change_static_threshold()
+        session['threshold_value'] = get_static_threshold(metric)
 
         anomalies = get_anomalies(metric, loss)
         value_anomalies = value.iloc[anomalies]
         loss_anomalies = loss.iloc[anomalies]
         # model_versions = get_model_version(metric)
-
+        
         val_graph_json = create_value_graph(value, value_anomalies, 'metric_value')
         loss_graph_json = create_value_graph(loss, loss_anomalies, 'loss')
-
+    
         return render_template('metric.html', metric=metric, valueGraph=val_graph_json, lossGraph=loss_graph_json)
 
-    if request.method == 'POST':   
+    elif request.method == 'POST':   
         value, loss = get_value(metric)
         anomalies = get_anomalies(metric, loss)
         value_anomalies = value.iloc[anomalies]
@@ -92,8 +92,7 @@ def show_metric(metric):
 def create_value_graph(dataset, anomalies, target_column):
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=dataset['metric_datetime'], y=dataset[target_column], name='Value Time Series'))
-    if target_column == 'loss':
-        fig.add_trace(go.Scatter(x=anomalies['metric_datetime'], y=anomalies[target_column], mode='markers', name='Anomaly'))
+    fig.add_trace(go.Scatter(x=anomalies['metric_datetime'], y=anomalies[target_column], mode='markers', name='Anomaly'))
     fig.update_layout(showlegend=True, title='Detected anomalies')
     graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
     return graphJSON
@@ -131,7 +130,7 @@ def get_model_version(metric):
 
 def get_anomalies(metric, dataset):
     if session['threshold'] == 'static':
-        threshold = get_static_threshold()
+        threshold = get_static_threshold(metric)
         dataset['anomaly'] = dataset['loss'].ge(threshold)
     elif session['threshold'] == 'dynamic':
         threshold = get_dynamic_threshold()
@@ -147,22 +146,23 @@ def get_anomalies(metric, dataset):
     return anomalies
 
 def get_models_version(metric):
-      print(metric)
+    print(metric)
 
 @app.route('/static', methods=['POST'])
 def change_static_threshold():
     metric = request.args.get('data')
+    session['threshold_value'] = get_static_threshold(metric)
+    
+    return '', 204
+
+def get_static_threshold(metric):
     db_session = Session()
     session['threshold'] = 'static'
 
     threshold = db_session.query(db.thresholds).filter(db.thresholds.metric_key == model_metadata[metric]['key'])
 
     threshold = pd.read_sql(threshold.statement, threshold.session.bind)
-    session['threshold_value'] = threshold['value']
-    return '', 204
-
-def get_static_threshold():
-    return session['threshold_value']
+    return threshold['static_threshold']
 
 @app.route('/dynamic', methods=['POST'])
 def change_dynamic_threshold():

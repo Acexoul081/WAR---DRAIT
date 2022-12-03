@@ -91,16 +91,16 @@ class metrics(base):
 class thresholds(base):
     __tablename__='udd_thresholds'
     metric_key = Column(String(255), primary_key=True)
-    value = Column(Float)
+    static_threshold = Column(Float)
     created_by = Column(String(255))
     created_time = Column(DateTime)
     updated_by = Column(String(255))
     updated_time = Column(DateTime)
 
 
-    def __init__(self, metric_key, value, created_by):
+    def __init__(self, metric_key, static_threshold, created_by):
         self.metric_key = metric_key
-        self.value = value
+        self.static_threshold = static_threshold
         self.created_by = created_by
         self.created_time = datetime.now()
 base.metadata.create_all(engine)
