@@ -17,7 +17,6 @@ $('button').on('click', function(){
 $('#static-btn').addClass('selected');
 
 $('#static-btn').click(function(){
-    // console.log(e)
     // get metric data here
     $.ajax({
         type: "POST",

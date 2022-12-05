@@ -23,7 +23,15 @@
         </div>
         <div>
             <div>Cron Manager</div>
-            <div>List of Model Version</div>
+            <div>
+                <div>Model Status</div>
+                {% for stat in modelStatus %}
+                <div>
+                    Version: {{stat.version}}
+                    State: {{stat.state}}
+                </div>
+                {% endfor %}
+            </div>
         </div>
     </div>
 
@@ -54,7 +62,7 @@
 
     $(document).ready(function() {
         //
-        var interval = 1000 * 60 * 0.5;
+        var interval = 1000 * 60 * 1;
         setInterval(ajax_call, interval);
     });
 </script>
