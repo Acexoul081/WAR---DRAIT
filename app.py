@@ -6,6 +6,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 from sqlalchemy import create_engine, desc, and_
 from sqlalchemy.orm import sessionmaker
+from paramiko import SSHClient, AutoAddPolicy
 
 import pandas as pd
 
@@ -21,6 +22,11 @@ import db
 
 app = Flask(__name__)
 app.secret_key = 'any random string'
+
+client = SSHClient()
+client.load_system_host_keys()
+client.set_missing_host_key_policy(AutoAddPolicy())
+client.connect('172.16.11.137', username='admin', password='P@ssword1234')
 
 model_metadata = {}
 with open("preprocess.yaml") as f:
@@ -57,11 +63,14 @@ def show_metric(metric):
         value_anomalies = value.iloc[anomalies]
         loss_anomalies = loss.iloc[anomalies]
         model_version = get_model_version(metric)
-        
+
+        stdin,stdout,stderr = client.exec_command(f"crontab -l | grep \"{metric}\"")
+        cron_info = stdout.read().decode('utf-8').strip().split('\n')
+
         val_graph_json = create_value_graph(value, value_anomalies, 'metric_value')
         loss_graph_json = create_value_graph(loss, loss_anomalies, 'loss')
         
-        return render_template('metric.html', metric=metric, valueGraph=val_graph_json, lossGraph=loss_graph_json, modelStatus=model_version)
+        return render_template('metric.html', metric=metric, valueGraph=val_graph_json, lossGraph=loss_graph_json, modelStatus=model_version, crons = cron_info if cron_info else 'No Cron Available')
 
     elif request.method == 'POST':   
         value, loss = get_value(metric)
@@ -106,7 +115,7 @@ def get_value(metric):
     value = pd.read_sql(value.statement, value.session.bind)
     loss.rename(columns = {'timestamp':'metric_datetime'}, inplace = True)
     return value,loss
-    #buat yg metric ke transaction
+    #buat yg metric ke transaction pakai tagnya Tamim aja
 
 def get_model_version(metric):
     global PORT, channel
@@ -136,7 +145,6 @@ def get_anomalies(metric, dataset):
         for start_index, end_index in zip(threshold['start_time'],threshold['end_time']):
             mask = (dataset['metric_datetime'] > start_index) & (dataset['metric_datetime'] <= end_index)
             dataset.loc[mask,'anomaly'] = True
-            # dataset['anomaly'][start_index: end_index] = True
     
     anomalies = dataset.loc[dataset['anomaly'] == True].index
     return anomalies
@@ -174,6 +182,18 @@ def get_dynamic_threshold(metric, first_date):
         ).order_by(desc(db.anomalies.start_time))
     dynamic_threshold = pd.read_sql(threshold_query.statement, threshold_query.session.bind)
     return dynamic_threshold
+
+@app.route('/update-cron', methods=['POST'])
+def update_cron_tab():
+    data = request.args.get('data')
+    new_cron = request.form['new-cron']
+    prev_cron = request.form['prev-cron']
+    new_cron_script = prev_cron.replace(prev_cron[0 : len(new_cron)], new_cron, 1)
+    print(f"need to delete cron: {prev_cron[len(new_cron)+1:].split('$')[0]}")
+    stdin,stdout,stderr = client.exec_command(f"crontab -l | grep -v '{prev_cron[len(new_cron)+1:].split('$')[0]}'  | crontab -")
+    stdin,stdout,stderr = client.exec_command(f"(crontab -l ; echo '{new_cron_script}') | crontab -")
+    return '', 204
+
 
 @app.route('/about-us')
 def show_aboutus():

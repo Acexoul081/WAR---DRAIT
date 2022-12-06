@@ -22,7 +22,18 @@
             <button class='button -regular center' id="dynamic-btn">Dynamic Thresholding</button>
         </div>
         <div>
-            <div>Cron Manager</div>
+            <div>
+                <div>Cron Manager</div>
+                {% for cron in crons %}
+                    <div>{{cron}}</div>
+                    <form>
+                        <input type="text" name="new-cron" placeholder="new schedule">
+                        <input type="hidden" name="prev-cron" value="{{cron}}">
+                        <button type="button" class="update-cron-btn">Update Schedule</button>
+                    </form>
+                {% endfor %}
+                
+            </div>
             <div>
                 <div>Model Status</div>
                 {% for stat in modelStatus %}
