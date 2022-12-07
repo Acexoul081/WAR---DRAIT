@@ -6,6 +6,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 from sqlalchemy import create_engine, desc, and_
 from sqlalchemy.orm import sessionmaker
+from paramiko import SSHClient, AutoAddPolicy
 
 import pandas as pd
 
@@ -19,9 +20,13 @@ from google.protobuf.json_format import MessageToJson
 
 import db
 
-#setting app backend
 app = Flask(__name__)
 app.secret_key = 'any random string'
+
+client = SSHClient()
+client.load_system_host_keys()
+client.set_missing_host_key_policy(AutoAddPolicy())
+client.connect('172.16.11.137', username='admin', password='P@ssword1234')
 
 model_metadata = {}
 with open("preprocess.yaml") as f:
@@ -35,7 +40,7 @@ with open("preprocess.yaml") as f:
 
 #setting connection to tf-serving
 PORT = 8500
-channel = grpc.insecure_channel('localhost:{}'.format(PORT))
+channel = grpc.insecure_channel('172.16.11.137:{}'.format(PORT))
 Session = sessionmaker(bind=db.engine)
 
 @app.route('/')
@@ -57,21 +62,21 @@ def show_metric(metric):
         anomalies = get_anomalies(metric, loss)
         value_anomalies = value.iloc[anomalies]
         loss_anomalies = loss.iloc[anomalies]
-        # model_versions = get_model_version(metric)
-        
+        model_version = get_model_version(metric)
+
+        stdin,stdout,stderr = client.exec_command(f"crontab -l | grep \"{metric}\"")
+        cron_info = stdout.read().decode('utf-8').strip().split('\n')
+
         val_graph_json = create_value_graph(value, value_anomalies, 'metric_value')
         loss_graph_json = create_value_graph(loss, loss_anomalies, 'loss')
-
-        return render_template('metric.html', metric=metric, valueGraph=val_graph_json, lossGraph=loss_graph_json)
+        
+        return render_template('metric.html', metric=metric, valueGraph=val_graph_json, lossGraph=loss_graph_json, modelStatus=model_version, crons = cron_info if cron_info else 'No Cron Available')
 
     elif request.method == 'POST':   
         value, loss = get_value(metric)
         anomalies = get_anomalies(metric, loss)
         value_anomalies = value.iloc[anomalies]
         loss_anomalies = loss.iloc[anomalies]
-
-        print(value_anomalies)
-        print(loss_anomalies)
 
         value_datetime = [i.to_pydatetime() for i in value['metric_datetime']]
         loss_datetime = [i.to_pydatetime() for i in loss['metric_datetime']]
@@ -110,43 +115,39 @@ def get_value(metric):
     value = pd.read_sql(value.statement, value.session.bind)
     loss.rename(columns = {'timestamp':'metric_datetime'}, inplace = True)
     return value,loss
-    #buat yg metric ke transaction
+    #buat yg metric ke transaction pakai tagnya Tamim aja
 
 def get_model_version(metric):
     global PORT, channel
-    stub = prediction_service_pb2_grpc.PredictionServiceStub(channel)
-
+    
+    stub = model_service_pb2_grpc.ModelServiceStub(channel)
     request = get_model_status_pb2.GetModelStatusRequest()
     request.model_spec.name = metric
     result = stub.GetModelStatus(request, 5)  # 5 secs timeout
-    print(f"Model status: {result}")
     
-    request = get_model_metadata_pb2.GetModelMetadataRequest()
-    request.model_spec.name = metric
-    request.metadata_field.append("signature_def")
-    result = stub.GetModelMetadata(request, 5)  # 5 secs timeout
+    # stub = prediction_service_pb2_grpc.PredictionServiceStub(channel)
+    # request = get_model_metadata_pb2.GetModelMetadataRequest()
+    # request.model_spec.name = metric
+    # request.metadata_field.append("signature_def")
+    # result = stub.GetModelMetadata(request, 5)  # 5 secs timeout
+
     result = json.loads(MessageToJson(result))
-    print(f"Model metadata: {result}")
+
+    return result['model_version_status']
 
 def get_anomalies(metric, dataset):
     if session['threshold'] == 'static':
         threshold = get_static_threshold(metric)
         dataset['anomaly'] = dataset['loss'].ge(threshold)
     elif session['threshold'] == 'dynamic':
-        threshold = get_dynamic_threshold()
+        threshold = get_dynamic_threshold(metric, dataset.iloc[-1]['metric_datetime'].to_pydatetime())
         dataset['anomaly']=False
-        print(threshold)
-        for start_index, end_index in threshold:
-            #validasi index outofbound
-            dataset['anomaly'][start_index: end_index] = True
+        for start_index, end_index in zip(threshold['start_time'],threshold['end_time']):
+            mask = (dataset['metric_datetime'] > start_index) & (dataset['metric_datetime'] <= end_index)
+            dataset.loc[mask,'anomaly'] = True
     
-    #anomali samain antara value df sama loss df
-    #ntar ambil anomali per datetime
     anomalies = dataset.loc[dataset['anomaly'] == True].index
     return anomalies
-
-def get_models_version(metric):
-    print(metric)
 
 @app.route('/static', methods=['POST'])
 def change_static_threshold():
@@ -161,20 +162,37 @@ def get_static_threshold(metric):
     threshold = db_session.query(db.thresholds).filter(db.thresholds.metric_key == model_metadata[metric]['key'])
 
     threshold = pd.read_sql(threshold.statement, threshold.session.bind)
-    return threshold['static_threshold']
+
+    return threshold['static_threshold'].values[0]
 
 @app.route('/dynamic', methods=['POST'])
 def change_dynamic_threshold():
     metric = request.args.get('data')
     session['threshold'] = 'dynamic'
     return '', 204
-    # #query threshold data from db
 
-def get_dynamic_threshold(metric):
+def get_dynamic_threshold(metric, first_date):
     db_session = Session()
-    threshold_query = db_session.query(db.anomalies).filter(db.anomalies.metric_key == model_metadata[metric]['key']).order_by(desc(db.anomalies.start_time)).limit(200) #ambil sampe jamber
+    threshold_query = db_session.query(db.anomalies).filter(
+        and_(
+            db.anomalies.metric_key == model_metadata[metric]['key'],
+            db.anomalies.end_time > first_date
+        )   
+        ).order_by(desc(db.anomalies.start_time))
     dynamic_threshold = pd.read_sql(threshold_query.statement, threshold_query.session.bind)
     return dynamic_threshold
+
+@app.route('/update-cron', methods=['POST'])
+def update_cron_tab():
+    data = request.args.get('data')
+    new_cron = request.form['new-cron']
+    prev_cron = request.form['prev-cron']
+    new_cron_script = prev_cron.replace(prev_cron[0 : len(new_cron)], new_cron, 1)
+    print(f"need to delete cron: {prev_cron[len(new_cron)+1:].split('$')[0]}")
+    stdin,stdout,stderr = client.exec_command(f"crontab -l | grep -v '{prev_cron[len(new_cron)+1:].split('$')[0]}'  | crontab -")
+    stdin,stdout,stderr = client.exec_command(f"(crontab -l ; echo '{new_cron_script}') | crontab -")
+    return '', 204
+
 
 @app.route('/about-us')
 def show_aboutus():

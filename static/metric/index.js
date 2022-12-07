@@ -17,7 +17,6 @@ $('button').on('click', function(){
 $('#static-btn').addClass('selected');
 
 $('#static-btn').click(function(){
-    // console.log(e)
     // get metric data here
     $.ajax({
         type: "POST",
@@ -37,4 +36,21 @@ $('#dynamic-btn').click(function(e){
         }
     });
 });
+
+$('.update-cron-btn').click(function(e){
+    e.preventDefault();
+    console.log($(this).parent().serialize())
+    $.ajax({
+        type: "POST",
+        url: '/update-cron',
+        data: $(this).parent().serialize(),
+        // data: { 
+        //     cron: $(this).val(),
+        //     // access_token: $("#access_token").val()
+        // },
+        success: function(result) {
+            console.log('update success')
+        }
+    });
+})
 
