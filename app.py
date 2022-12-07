@@ -61,7 +61,7 @@ def show_metric(metric):
         
         val_graph_json = create_value_graph(value, value_anomalies, 'metric_value')
         loss_graph_json = create_value_graph(loss, loss_anomalies, 'loss')
-    
+
         return render_template('metric.html', metric=metric, valueGraph=val_graph_json, lossGraph=loss_graph_json)
 
     elif request.method == 'POST':   
@@ -158,7 +158,6 @@ def change_static_threshold():
 def get_static_threshold(metric):
     db_session = Session()
     session['threshold'] = 'static'
-
     threshold = db_session.query(db.thresholds).filter(db.thresholds.metric_key == model_metadata[metric]['key'])
 
     threshold = pd.read_sql(threshold.statement, threshold.session.bind)
@@ -179,4 +178,4 @@ def get_dynamic_threshold(metric):
 
 @app.route('/about-us')
 def show_aboutus():
-    return f''
+    return render_template('about-us.html')
