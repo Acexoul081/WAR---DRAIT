@@ -3,6 +3,7 @@ from sqlalchemy import create_engine
 from sqlalchemy import Column, String, Integer, Float, Boolean, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+import sqlalchemy as sa
 
 engine = create_engine('mariadb+mariadbconnector://dbadmin:dbadmin@172.16.11.113/ai_db?charset=utf8mb4', echo=True)
 #manage tables
@@ -95,12 +96,13 @@ class thresholds(base):
     created_by = Column(String(255))
     created_time = Column(DateTime)
     updated_by = Column(String(255))
-    updated_time = Column(DateTime)
+    updated_time = Column(DateTime, server_default=sa.text("GETDATE()"), onupdate=sa.text("GETDATE()"))
 
 
     def __init__(self, metric_key, static_threshold, created_by):
         self.metric_key = metric_key
         self.static_threshold = static_threshold
         self.created_by = created_by
-        self.created_time = datetime.now()
+        self.created_time = sa.text("GETDATE()")
+        
 base.metadata.create_all(engine)

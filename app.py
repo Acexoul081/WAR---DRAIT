@@ -4,10 +4,10 @@ import json
 import plotly
 import plotly.express as px
 import plotly.graph_objects as go
-from sqlalchemy import create_engine, desc, and_
+from sqlalchemy import create_engine, desc, and_, func, text
 from sqlalchemy.orm import sessionmaker
 from paramiko import SSHClient, AutoAddPolicy
-
+import base64
 import pandas as pd
 
 import grpc
@@ -56,6 +56,7 @@ def main_page():
 def show_metric(metric):
     global first_index, last_index
     if request.method == 'GET':
+        decoded_metric = base64.urlsafe_b64decode(metric).decode("ascii")
         value, loss = get_value(metric)
         session['threshold_value'] = get_static_threshold(metric)
 
@@ -64,13 +65,13 @@ def show_metric(metric):
         loss_anomalies = loss.iloc[anomalies]
         model_version = get_model_version(metric)
 
-        stdin,stdout,stderr = client.exec_command(f"crontab -l | grep \"{metric}\"")
+        stdin,stdout,stderr = client.exec_command(f"crontab -l | grep \"{decoded_metric}\"")
         cron_info = stdout.read().decode('utf-8').strip().split('\n')
 
         val_graph_json = create_value_graph(value, value_anomalies, 'metric_value')
         loss_graph_json = create_value_graph(loss, loss_anomalies, 'loss')
         
-        return render_template('metric.html', metric=metric, valueGraph=val_graph_json, lossGraph=loss_graph_json, modelStatus=model_version, crons = cron_info if cron_info else 'No Cron Available')
+        return render_template('metric.html', metric=decoded_metric, valueGraph=val_graph_json, lossGraph=loss_graph_json, modelStatus=model_version, crons = cron_info if cron_info else 'No Cron Available')
 
     elif request.method == 'POST':   
         value, loss = get_value(metric)
@@ -104,12 +105,18 @@ def create_value_graph(dataset, anomalies, target_column):
 
 def get_value(metric):
     db_session = Session()
-    loss = db_session.query(db.losses).filter(db.losses.metric_key == model_metadata[metric]['key']).order_by(desc(db.losses.timestamp)).limit(200)
+    loss = db_session.query(db.losses).filter(
+        and_(
+            db.losses.metric_key == model_metadata[metric]['key'],
+            func.TIMESTAMPDIFF(text('day'),db.losses.timestamp,func.now()) <= 0
+        )
+    ).order_by(desc(db.losses.timestamp))
     value = db_session.query(db.metrics).filter(
         and_(
             db.metrics.tag == model_metadata[metric]['tag'], 
-            db.metrics.metric_name == model_metadata[metric]['name'])
-        ).order_by(desc(db.metrics.metric_datetime)).limit(200)
+            db.metrics.metric_name == model_metadata[metric]['name']),
+            func.TIMESTAMPDIFF(text('day'),db.metrics.metric_datetime,func.now()) <= 0
+        ).order_by(desc(db.metrics.metric_datetime))
 
     loss = pd.read_sql(loss.statement, loss.session.bind)
     value = pd.read_sql(value.statement, value.session.bind)
@@ -188,7 +195,7 @@ def update_cron_tab():
     new_cron = request.form['new-cron']
     prev_cron = request.form['prev-cron']
     new_cron_script = prev_cron.replace(prev_cron[0 : len(new_cron)], new_cron, 1)
-    print(f"need to delete cron: {prev_cron[len(new_cron)+1:].split('$')[0]}")
+    
     stdin,stdout,stderr = client.exec_command(f"crontab -l | grep -v '{prev_cron[len(new_cron)+1:].split('$')[0]}'  | crontab -")
     stdin,stdout,stderr = client.exec_command(f"(crontab -l ; echo '{new_cron_script}') | crontab -")
     return '', 204
