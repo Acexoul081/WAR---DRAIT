@@ -49,7 +49,17 @@ def main_page():
     model_data = []
     if config['models'] is not None:
         for model in config['models']:
-            model_data.append({'key':model['key'], 'id':model['id']})
+            key_split = model['key'].split('|')
+            ip = key_split[0]
+            data_source = key_split[1]
+            metric_type = key_split[3]
+            model_data.append({
+                'key':model['key'],
+                'id':model['id'],
+                'ip':ip,
+                'source':data_source,
+                'metric_type':metric_type
+                })
     return render_template('main.html', model_data=model_data)
 
 @app.route('/metric/<metric>', methods=['GET', 'POST'])

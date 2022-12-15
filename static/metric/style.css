@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Open+Sans&family=Source+Sans+Pro:wght@400;700&display=swap");
+/* @import url("https://fonts.googleapis.com/css2?family=Open+Sans&family=Source+Sans+Pro:wght@400;700&display=swap"); */
 
 :root {
     --ff-primary: "Open Sans", sans-serif;
@@ -44,7 +44,7 @@ body {
     margin: 0;
     padding: 0;
   
-    background-color: var(--clr-neutral-300);
+    /* background-color: var(--clr-neutral-300); */
   
     font-family: var(--ff-primary);
     line-height: 1.5;
