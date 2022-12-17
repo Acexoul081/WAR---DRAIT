@@ -74,6 +74,7 @@ body {
 
 .banner-frame{
   /* max-width: 50%; */
+  border-radius: 5px;
   width: 50em;
   background-color: rgb(192, 237, 255);
   display: flex;
@@ -85,6 +86,10 @@ body {
   background-repeat: no-repeat;
   background-position: 15% 45%;
   background-size: 22%;
+}
+
+.banner-frame p{
+  text-align: end;
 }
 
 table {

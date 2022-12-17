@@ -81,7 +81,15 @@ def show_metric(metric):
         val_graph_json = create_value_graph(value, value_anomalies, 'metric_value')
         loss_graph_json = create_value_graph(loss, loss_anomalies, 'loss')
         
-        return render_template('metric.html', metric=decoded_metric, valueGraph=val_graph_json, lossGraph=loss_graph_json, modelStatus=model_version, crons = cron_info if cron_info else 'No Cron Available')
+        decoded_metric_in_list = decoded_metric.split('|')
+        metric_detail = {
+            'ip':decoded_metric_in_list[0],
+            'source':decoded_metric_in_list[1],
+            'name':decoded_metric_in_list[2],
+            'type':decoded_metric_in_list[3]
+        }
+        
+        return render_template('metric.html', metric=metric_detail, valueGraph=val_graph_json, lossGraph=loss_graph_json, modelStatus=model_version, crons = cron_info if cron_info else 'No Cron Available')
 
     elif request.method == 'POST':   
         value, loss = get_value(metric)
@@ -109,7 +117,7 @@ def create_value_graph(dataset, anomalies, target_column):
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=dataset['metric_datetime'], y=dataset[target_column], name='Value Time Series'))
     fig.add_trace(go.Scatter(x=anomalies['metric_datetime'], y=anomalies[target_column], mode='markers', name='Anomaly'))
-    fig.update_layout(showlegend=True, title='Detected anomalies')
+    fig.update_layout(showlegend=True, title=target_column)
     graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
     return graphJSON
 

@@ -88,13 +88,14 @@ color: var(--clr-neutral-800);
     display: flex;
     flex-wrap: wrap;
     /* justify-content: flex-end; */
-}
-
-.button {
+  }
+  
+  .button {
     display: flex;
     overflow: hidden;
+    /* color: #555555; */
   
-    /* margin: 10px; */
+    margin: 10px;
     padding: 12px 12px;
   
     cursor: pointer;
@@ -155,14 +156,14 @@ color: var(--clr-neutral-800);
   opacity: 1;
 }
 .button.-regular:active {
-  background-color: #d5d6d6;
+  background-color: #a2d3d3;
   opacity: 1;
 }
 
 .button.selected{
   color:green;
   font-weight: bolder;
-  background-color: white;
+  background-color: rgb(211, 235, 236);
   box-shadow: none;
 }
 
