@@ -14,7 +14,8 @@
     </div>
 
     <div class="model_detail">
-        <h3 class="model_title">Model Name : {{metric}}</h3>
+        <h3 class="model_title">Server IP &nbsp;&nbsp;&nbsp;&nbsp;: {{metric['ip']}}</h3>
+        <h3 class="model_title">Metric Type : {{metric['type']}}</h3>
         <div class="chart" id="value"></div>
         <div class="chart" id="loss"></div>
         <div class="thresholding_option">

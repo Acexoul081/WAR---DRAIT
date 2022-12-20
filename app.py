@@ -49,7 +49,17 @@ def main_page():
     model_data = []
     if config['models'] is not None:
         for model in config['models']:
-            model_data.append({'key':model['key'], 'id':model['id']})
+            key_split = model['key'].split('|')
+            ip = key_split[0]
+            data_source = key_split[1]
+            metric_type = key_split[3]
+            model_data.append({
+                'key':model['key'],
+                'id':model['id'],
+                'ip':ip,
+                'source':data_source,
+                'metric_type':metric_type
+                })
     return render_template('main.html', model_data=model_data)
 
 @app.route('/metric/<metric>', methods=['GET', 'POST'])
@@ -71,7 +81,15 @@ def show_metric(metric):
         val_graph_json = create_value_graph(value, value_anomalies, 'metric_value')
         loss_graph_json = create_value_graph(loss, loss_anomalies, 'loss')
         
-        return render_template('metric.html', metric=decoded_metric, valueGraph=val_graph_json, lossGraph=loss_graph_json, modelStatus=model_version, crons = cron_info if cron_info else 'No Cron Available')
+        decoded_metric_in_list = decoded_metric.split('|')
+        metric_detail = {
+            'ip':decoded_metric_in_list[0],
+            'source':decoded_metric_in_list[1],
+            'name':decoded_metric_in_list[2],
+            'type':decoded_metric_in_list[3]
+        }
+        
+        return render_template('metric.html', metric=metric_detail, valueGraph=val_graph_json, lossGraph=loss_graph_json, modelStatus=model_version, crons = cron_info if cron_info else 'No Cron Available')
 
     elif request.method == 'POST':   
         value, loss = get_value(metric)
@@ -99,7 +117,7 @@ def create_value_graph(dataset, anomalies, target_column):
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=dataset['metric_datetime'], y=dataset[target_column], name='Value Time Series'))
     fig.add_trace(go.Scatter(x=anomalies['metric_datetime'], y=anomalies[target_column], mode='markers', name='Anomaly'))
-    fig.update_layout(showlegend=True, title='Detected anomalies')
+    fig.update_layout(showlegend=True, title=target_column)
     graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
     return graphJSON
 
@@ -168,7 +186,6 @@ def change_static_threshold():
 def get_static_threshold(metric):
     db_session = Session()
     session['threshold'] = 'static'
-
     threshold = db_session.query(db.thresholds).filter(db.thresholds.metric_key == model_metadata[metric]['key'])
 
     threshold = pd.read_sql(threshold.statement, threshold.session.bind)
@@ -209,4 +226,4 @@ def update_cron_tab():
 
 @app.route('/about-us')
 def show_aboutus():
-    return f''
+    return render_template('about-us.html')
