@@ -3,7 +3,7 @@ from sqlalchemy import create_engine
 from sqlalchemy import Column, String, Integer, Float, Boolean, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-import sqlalchemy as sa
+from sqlalchemy.sql import func
 
 engine = create_engine('mariadb+mariadbconnector://dbadmin:dbadmin@172.16.11.113/ai_db?charset=utf8mb4', echo=True)
 #manage tables
@@ -96,13 +96,32 @@ class thresholds(base):
     created_by = Column(String(255))
     created_time = Column(DateTime)
     updated_by = Column(String(255))
-    updated_time = Column(DateTime, server_default=sa.text("GETDATE()"), onupdate=sa.text("GETDATE()"))
-
+    updated_time = Column(DateTime, server_default=func.now(), onupdate=func.now())
 
     def __init__(self, metric_key, static_threshold, created_by):
         self.metric_key = metric_key
         self.static_threshold = static_threshold
         self.created_by = created_by
-        self.created_time = sa.text("GETDATE()")
+        self.created_time = func.now()
+
+class whitelists(base):
+    __tablename__='udd_whitelists'
+    id = Column(String(255), primary_key=True)
+    metric_key = Column(String(255))
+    start_time = Column(DateTime)
+    end_time = Column(DateTime)
+    created_by = Column(String(255))
+    created_time = Column(DateTime)
+    updated_by = Column(String(255))
+    updated_time = Column(DateTime)
+
+
+    def __init__(self, id, metric_key, start_time, end_time, created_by):
+        self.id = id
+        self.metric_key = metric_key
+        self.start_time = start_time
+        self.end_time = end_time
+        self.created_by = created_by
+        self.created_time = datetime.now()
         
 base.metadata.create_all(engine)

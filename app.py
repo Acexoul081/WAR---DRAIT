@@ -108,14 +108,14 @@ def get_value(metric):
     loss = db_session.query(db.losses).filter(
         and_(
             db.losses.metric_key == model_metadata[metric]['key'],
-            func.TIMESTAMPDIFF(text('day'),db.losses.timestamp,func.now()) <= 0
+            func.TIMESTAMPDIFF(text('month'),db.losses.timestamp,func.now()) <= 1
         )
     ).order_by(desc(db.losses.timestamp))
     value = db_session.query(db.metrics).filter(
         and_(
             db.metrics.tag == model_metadata[metric]['tag'], 
             db.metrics.metric_name == model_metadata[metric]['name']),
-            func.TIMESTAMPDIFF(text('day'),db.metrics.metric_datetime,func.now()) <= 0
+            func.TIMESTAMPDIFF(text('month'),db.metrics.metric_datetime,func.now()) <= 1
         ).order_by(desc(db.metrics.metric_datetime))
 
     loss = pd.read_sql(loss.statement, loss.session.bind)
@@ -143,12 +143,14 @@ def get_model_version(metric):
     return result['model_version_status']
 
 def get_anomalies(metric, dataset):
+    dataset['anomaly']=False
     if session['threshold'] == 'static':
         threshold = get_static_threshold(metric)
-        dataset['anomaly'] = dataset['loss'].ge(threshold)
+        if threshold is not None:
+            dataset['anomaly'] = dataset['loss'].ge(threshold)
     elif session['threshold'] == 'dynamic':
         threshold = get_dynamic_threshold(metric, dataset.iloc[-1]['metric_datetime'].to_pydatetime())
-        dataset['anomaly']=False
+        
         for start_index, end_index in zip(threshold['start_time'],threshold['end_time']):
             mask = (dataset['metric_datetime'] > start_index) & (dataset['metric_datetime'] <= end_index)
             dataset.loc[mask,'anomaly'] = True
@@ -170,6 +172,9 @@ def get_static_threshold(metric):
     threshold = db_session.query(db.thresholds).filter(db.thresholds.metric_key == model_metadata[metric]['key'])
 
     threshold = pd.read_sql(threshold.statement, threshold.session.bind)
+
+    if threshold.empty:
+        return None
 
     return threshold['static_threshold'].values[0]
 

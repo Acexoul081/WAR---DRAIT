@@ -17,8 +17,30 @@ models:
         preprocess/MTcyLjE2LjExLjE3MnxTaXRlc2NvcGV8dXRpbGl6YXRpb258Q1BVfFBWRTEzUDEwMQ==/pickled_y_hat.pkl
       previous_y_test: >-
         preprocess/MTcyLjE2LjExLjE3MnxTaXRlc2NvcGV8dXRpbGl6YXRpb258Q1BVfFBWRTEzUDEwMQ==/pickled_y_test.pkl
-      scale: >-
-        preprocess/MTcyLjE2LjExLjE3MnxTaXRlc2NvcGV8dXRpbGl6YXRpb258Q1BVfFBWRTEzUDEwMQ==/pickled_scaler.pkl
+      z_score: >-
+        preprocess/MTcyLjE2LjExLjE3MnxTaXRlc2NvcGV8dXRpbGl6YXRpb258Q1BVfFBWRTEzUDEwMQ==/pickled_z_score.pkl
+      seasonality: hourly
+  - id: >-
+      MTcyLjE2LjExLjE3MnxTaXRlc2NvcGV8dmlydHVhbCBtZW1vcnkgdXNlZCAlfE1lbW9yeXxQVkUxM1AxMDE=
+    key: >-
+      172.16.11.172|Sitescope|virtual memory used %|Memory|PVE13P101
+    name: virtual memory used %
+    tag: Sitescope|Server Infrastructure|DigieBoard|appweb02|DC|PVE13P101|172.16.11.172|Memory
+    timestep: 60
+    granularity: 1H
+    realtime_granularity: 1T
+    preprocess:
+      regression: >-
+        preprocess/MTcyLjE2LjExLjE3MnxTaXRlc2NvcGV8dmlydHVhbCBtZW1vcnkgdXNlZCAlfE1lbW9yeXxQVkUxM1AxMDE=/pickled_regressor.pkl
+      previous_value: >-
+        preprocess/MTcyLjE2LjExLjE3MnxTaXRlc2NvcGV8dmlydHVhbCBtZW1vcnkgdXNlZCAlfE1lbW9yeXxQVkUxM1AxMDE=/previous_value.pkl
+      previous_y_hat: >-
+        preprocess/MTcyLjE2LjExLjE3MnxTaXRlc2NvcGV8dmlydHVhbCBtZW1vcnkgdXNlZCAlfE1lbW9yeXxQVkUxM1AxMDE=/pickled_y_hat.pkl
+      previous_y_test: >-
+        preprocess/MTcyLjE2LjExLjE3MnxTaXRlc2NvcGV8dmlydHVhbCBtZW1vcnkgdXNlZCAlfE1lbW9yeXxQVkUxM1AxMDE=/pickled_y_test.pkl
+      z_score: >-
+        preprocess/MTcyLjE2LjExLjE3MnxTaXRlc2NvcGV8dmlydHVhbCBtZW1vcnkgdXNlZCAlfE1lbW9yeXxQVkUxM1AxMDE=/pickled_z_score.pkl
+      seasonality: hourly
   # - id: >-
   #     MTcyLjE2LjExLjE3MnxTaXRlc2NvcGV8RGlzay9GaWxlIFN5c3RlbS9bSGFyZGRpc2tWb2x1bWUxXS9wZXJjZW50IGZ1bGx8RGlza3xQVkUxM1AxMDE=
   #   key: >-
@@ -55,8 +77,9 @@ models:
         preprocess/MTcyLjE2LjExLjE3MnxTaXRlc2NvcGV8RGlzay9GaWxlIFN5c3RlbS9bQ10vcGVyY2VudCBmdWxsfERpc2t8UFZFMTNQMTAx/pickled_y_hat.pkl
       previous_y_test: >-
         preprocess/MTcyLjE2LjExLjE3MnxTaXRlc2NvcGV8RGlzay9GaWxlIFN5c3RlbS9bQ10vcGVyY2VudCBmdWxsfERpc2t8UFZFMTNQMTAx/pickled_y_test.pkl
-      scale: >-
-        preprocess/MTcyLjE2LjExLjE3MnxTaXRlc2NvcGV8RGlzay9GaWxlIFN5c3RlbS9bQ10vcGVyY2VudCBmdWxsfERpc2t8UFZFMTNQMTAx/pickled_scaler.pkl
+      z_score: >-
+        preprocess/MTcyLjE2LjExLjE3MnxTaXRlc2NvcGV8RGlzay9GaWxlIFN5c3RlbS9bQ10vcGVyY2VudCBmdWxsfERpc2t8UFZFMTNQMTAx/pickled_z_score.pkl
+      seasonality: hourly
   - id: >-
       MTcyLjE2LjExLjE3M3xTaXRlc2NvcGV8dXRpbGl6YXRpb258Q1BVfFBWRTEzUDEwNA==
     key: >-
@@ -75,8 +98,30 @@ models:
         preprocess/MTcyLjE2LjExLjE3M3xTaXRlc2NvcGV8dXRpbGl6YXRpb258Q1BVfFBWRTEzUDEwNA==/pickled_y_hat.pkl
       previous_y_test: >-
         preprocess/MTcyLjE2LjExLjE3M3xTaXRlc2NvcGV8dXRpbGl6YXRpb258Q1BVfFBWRTEzUDEwNA==/pickled_y_test.pkl
-      scale: >-
-        preprocess/MTcyLjE2LjExLjE3M3xTaXRlc2NvcGV8dXRpbGl6YXRpb258Q1BVfFBWRTEzUDEwNA==/pickled_scaler.pkl
+      z_score: >-
+        preprocess/MTcyLjE2LjExLjE3M3xTaXRlc2NvcGV8dXRpbGl6YXRpb258Q1BVfFBWRTEzUDEwNA==/pickled_z_score.pkl
+      seasonality: hourly
+  - id: >-
+      MTcyLjE2LjExLjE3M3xTaXRlc2NvcGV8dmlydHVhbCBtZW1vcnkgdXNlZCAlfE1lbW9yeXxQVkUxM1AxMDQ=
+    key: >-
+      172.16.11.173|Sitescope|virtual memory used %|Memory|PVE13P104
+    name: virtual memory used %
+    tag: Sitescope|Server Infrastructure|DigieBoard|appmid02|DC|PVE13P104|172.16.11.173|Memory
+    timestep: 60
+    granularity: 1H
+    realtime_granularity: 1T
+    preprocess:
+      regression: >-
+        preprocess/MTcyLjE2LjExLjE3M3xTaXRlc2NvcGV8dmlydHVhbCBtZW1vcnkgdXNlZCAlfE1lbW9yeXxQVkUxM1AxMDQ=/pickled_regressor.pkl
+      previous_value: >-
+        preprocess/MTcyLjE2LjExLjE3M3xTaXRlc2NvcGV8dmlydHVhbCBtZW1vcnkgdXNlZCAlfE1lbW9yeXxQVkUxM1AxMDQ=/previous_value.pkl
+      previous_y_hat: >-
+        preprocess/MTcyLjE2LjExLjE3M3xTaXRlc2NvcGV8dmlydHVhbCBtZW1vcnkgdXNlZCAlfE1lbW9yeXxQVkUxM1AxMDQ=/pickled_y_hat.pkl
+      previous_y_test: >-
+        preprocess/MTcyLjE2LjExLjE3M3xTaXRlc2NvcGV8dmlydHVhbCBtZW1vcnkgdXNlZCAlfE1lbW9yeXxQVkUxM1AxMDQ=/pickled_y_test.pkl
+      z_score: >-
+        preprocess/MTcyLjE2LjExLjE3M3xTaXRlc2NvcGV8dmlydHVhbCBtZW1vcnkgdXNlZCAlfE1lbW9yeXxQVkUxM1AxMDQ=/pickled_z_score.pkl
+      seasonality: hourly
   # - id: >-
   #     MTcyLjE2LjExLjE3M3xTaXRlc2NvcGV8RGlzay9GaWxlIFN5c3RlbS9bSGFyZGRpc2tWb2x1bWUxXS9wZXJjZW50IGZ1bGx8RGlza3xQVkUxM1AxMDQ=
   #   key: >-
@@ -113,8 +158,9 @@ models:
         preprocess/MTcyLjE2LjExLjE3M3xTaXRlc2NvcGV8RGlzay9GaWxlIFN5c3RlbS9bQ10vcGVyY2VudCBmdWxsfERpc2t8UFZFMTNQMTA0/pickled_y_hat.pkl
       previous_y_test: >-
         preprocess/MTcyLjE2LjExLjE3M3xTaXRlc2NvcGV8RGlzay9GaWxlIFN5c3RlbS9bQ10vcGVyY2VudCBmdWxsfERpc2t8UFZFMTNQMTA0/pickled_y_test.pkl
-      scale: >-
-        preprocess/MTcyLjE2LjExLjE3M3xTaXRlc2NvcGV8RGlzay9GaWxlIFN5c3RlbS9bQ10vcGVyY2VudCBmdWxsfERpc2t8UFZFMTNQMTA0/pickled_scaler.pkl
+      z_score: >-
+        preprocess/MTcyLjE2LjExLjE3M3xTaXRlc2NvcGV8RGlzay9GaWxlIFN5c3RlbS9bQ10vcGVyY2VudCBmdWxsfERpc2t8UFZFMTNQMTA0/pickled_z_score.pkl
+      seasonality: hourly
   - id: >-
       MTcyLjE2LjExLjE3NHxTaXRlc2NvcGV8dXRpbGl6YXRpb258Q1BVfFBWRTEzUDEwMg==
     key: >-
@@ -133,8 +179,29 @@ models:
         preprocess/MTcyLjE2LjExLjE3NHxTaXRlc2NvcGV8dXRpbGl6YXRpb258Q1BVfFBWRTEzUDEwMg==/pickled_y_hat.pkl
       previous_y_test: >-
         preprocess/MTcyLjE2LjExLjE3NHxTaXRlc2NvcGV8dXRpbGl6YXRpb258Q1BVfFBWRTEzUDEwMg==/pickled_y_test.pkl
+      z_score: >-
+        preprocess/MTcyLjE2LjExLjE3NHxTaXRlc2NvcGV8dXRpbGl6YXRpb258Q1BVfFBWRTEzUDEwMg==/pickled_z_score.pkl
+      seasonality: hourly
+  - id: >-
+      MTcyLjE2LjExLjE3NHxTaXRlc2NvcGV8dmlydHVhbCBtZW1vcnkgdXNlZCAlfE1lbW9yeXxQVkUxM1AxMDI=
+    key: >-
+      172.16.11.174|Sitescope|virtual memory used %|Memory|PVE13P102
+    name: virtual memory used %
+    tag: Sitescope|Server Infrastructure|DigieBoard|appdb02|DC|PVE13P102|172.16.11.174|Memory
+    timestep: 60
+    granularity: 1H
+    realtime_granularity: 1T
+    preprocess:
+      regression: >-
+        preprocess/MTcyLjE2LjExLjE3NHxTaXRlc2NvcGV8dmlydHVhbCBtZW1vcnkgdXNlZCAlfE1lbW9yeXxQVkUxM1AxMDI=/pickled_regressor.pkl
+      previous_value: >-
+        preprocess/MTcyLjE2LjExLjE3NHxTaXRlc2NvcGV8dmlydHVhbCBtZW1vcnkgdXNlZCAlfE1lbW9yeXxQVkUxM1AxMDI=/previous_value.pkl
+      previous_y_hat: >-
+        preprocess/MTcyLjE2LjExLjE3NHxTaXRlc2NvcGV8dmlydHVhbCBtZW1vcnkgdXNlZCAlfE1lbW9yeXxQVkUxM1AxMDI=/pickled_y_hat.pkl
+      previous_y_test: >-
+        preprocess/MTcyLjE2LjExLjE3NHxTaXRlc2NvcGV8dmlydHVhbCBtZW1vcnkgdXNlZCAlfE1lbW9yeXxQVkUxM1AxMDI=/pickled_y_test.pkl
       scale: >-
-        preprocess/MTcyLjE2LjExLjE3NHxTaXRlc2NvcGV8dXRpbGl6YXRpb258Q1BVfFBWRTEzUDEwMg==/pickled_scaler.pkl
+        preprocess/MTcyLjE2LjExLjE3NHxTaXRlc2NvcGV8dmlydHVhbCBtZW1vcnkgdXNlZCAlfE1lbW9yeXxQVkUxM1AxMDI=/pickled_scaler.pkl
   # - id: >-
   #     MTcyLjE2LjExLjE3NHxTaXRlc2NvcGV8RGlzay9GaWxlIFN5c3RlbS9bSGFyZGRpc2tWb2x1bWUxXS9wZXJjZW50IGZ1bGx8RGlza3xQVkUxM1AxMDI=
   #   key: >-
