@@ -1,4 +1,3 @@
-
 function update_graph(metric){
     $.getJSON({
         url:'/metric', data:metric, success:function(result){

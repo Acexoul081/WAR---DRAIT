@@ -44,6 +44,7 @@ body {
   /* place-items: center; */
   min-height: 100vh;
   margin: 0;
+  margin-bottom: 100px;
 
   /* background-color: var(--clr-neutral-300); */
 
@@ -118,4 +119,8 @@ img {
 a {
   text-decoration: none;
   color: inherit;
+}
+
+footer{
+  background-color: rgb(255, 255, 255);
 }
