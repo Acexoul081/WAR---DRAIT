@@ -18,6 +18,7 @@
         <h3 class="model_title">Metric Type : {{metric['type']}}</h3>
         <div class="chart" id="value"></div>
         <div class="chart" id="loss"></div>
+        <div class="chart" id="preproc"></div>
         <div class="thresholding_option">
             <button class='button -regular center' id="static-btn">Static Thresholding</button>
             <button class='button -regular center' id="dynamic-btn">Dynamic Thresholding</button>
@@ -56,8 +57,10 @@
 <script type="text/javascript">
     var value_graph = {{valueGraph | safe}};
     var loss_graph = {{lossGraph | safe}};
+    var preproc_graph = {{preprocGraph | safe}};
     Plotly.plot('value',value_graph,{});
     Plotly.plot('loss',loss_graph,{});
+    Plotly.plot('preproc',preproc_graph,{});
 
     var ajax_call = function() {
         $.ajax({

@@ -9,6 +9,7 @@ from sqlalchemy.orm import sessionmaker
 from paramiko import SSHClient, AutoAddPolicy
 import base64
 import pandas as pd
+import numpy as np
 
 import grpc
 from tensorflow_serving.apis import predict_pb2
@@ -80,6 +81,7 @@ def show_metric(metric):
 
         val_graph_json = create_value_graph(value, value_anomalies, 'metric_value')
         loss_graph_json = create_value_graph(loss, loss_anomalies, 'loss')
+        preproc_graph_json = create_value_graph(loss, loss_anomalies, 'value')
         
         decoded_metric_in_list = decoded_metric.split('|')
         metric_detail = {
@@ -89,7 +91,7 @@ def show_metric(metric):
             'type':decoded_metric_in_list[3]
         }
         
-        return render_template('metric.html', metric=metric_detail, valueGraph=val_graph_json, lossGraph=loss_graph_json, modelStatus=model_version, crons = cron_info if cron_info else 'No Cron Available')
+        return render_template('metric.html', metric=metric_detail, valueGraph=val_graph_json, lossGraph=loss_graph_json, preprocGraph= preproc_graph_json, modelStatus=model_version, crons = cron_info if cron_info else 'No Cron Available')
 
     elif request.method == 'POST':   
         value, loss = get_value(metric)
@@ -114,8 +116,10 @@ def show_metric(metric):
         }
 
 def create_value_graph(dataset, anomalies, target_column):
+    dataset = dataset.set_index('metric_datetime')
+    dataset = dataset.resample('1T').mean()
     fig = go.Figure()
-    fig.add_trace(go.Scatter(x=dataset['metric_datetime'], y=dataset[target_column], name='Value Time Series'))
+    fig.add_trace(go.Scatter(x=dataset.index, y=dataset[target_column], name='Value Time Series'))
     fig.add_trace(go.Scatter(x=anomalies['metric_datetime'], y=anomalies[target_column], mode='markers', name='Anomaly'))
     fig.update_layout(showlegend=True, title=target_column)
     graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
