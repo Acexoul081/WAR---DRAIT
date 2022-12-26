@@ -89,6 +89,43 @@ class metrics(base):
         self.created_by = created_by
         self.created_time = datetime.now()
 
+class transactions(base):
+    __tablename__='raw_metric_transaction'
+    id = Column(String(255), primary_key=True)
+    metric_datetime = Column(DateTime)
+    metric_unixtime = Column(Float)
+    data_source = Column(String(255))
+    application_name = Column(String(255))
+    application_component = Column(String(255))
+    location = Column(String(255))
+    user_experience = Column(String(255))
+    business_service = Column(String(255))
+    tier = Column(String(255))
+    category = Column(String(255))
+    microservice = Column(String(255))
+    business_transaction = Column(String(255))
+    metric_type = Column(String(255))
+    metric_name = Column(String(255))
+    metric_value = Column(Float)
+    metric_count = Column(Float)
+    metric_unit = Column(String(255))
+    tag = Column(String(255))
+    created_by = Column(String(255))
+    created_time = Column(DateTime)
+    updated_by = Column(String(255))
+    updated_time = Column(DateTime)
+
+
+    def __init__(self, timeseries_id, timestamp, loss,value,original, metric_key, created_by):
+        self.timeseries_id = timeseries_id
+        self.timestamp = timestamp
+        self.loss = loss
+        self.value = value
+        self.original = original
+        self.metric_key = metric_key
+        self.created_by = created_by
+        self.created_time = datetime.now()
+
 class thresholds(base):
     __tablename__='udd_thresholds'
     metric_key = Column(String(255), primary_key=True)
