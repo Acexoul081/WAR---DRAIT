@@ -36,38 +36,34 @@
         </div>
         <div>
             <div>
-                <div>Cron Manager</div>
-                <!-- Table -->
-                <div class="table-responsive">
-                    <table id="projectsTable" class="table align-middle table-edge table-nowrap mb-0">
-                        <thead class="thead-light">
-                            <tr>
-                                <th class="w-60px">No</th>
-                                <th>Schedule</th>
-                                <th>Schedule (in cron)</th>
-                                <th>Job Detail</th>
-                                <th>New Schedule</th>
-                                <th class="text-end">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for cron in crons %}
-                            <tr style="padding: 10px;">
-                                <td></td>
-                                <td>{{cron['schedule_readable']}}</td>
-                                <td class="text-muted">{{cron['schedule']}}</td>
-                                <td class="text-muted">{{cron['job_detail']}}</td>
-                                <form>
-                                    <td><input type="text" name="new-cron" placeholder="new schedule"></td>
-                                    <td><input type="hidden" name="prev-cron" value="{{cron['job_detail']}}"></td>
-                                    <td class="text-end"><button type="button" class="update-cron-btn">Update Schedule</button></td>
-                                </form>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div> <!-- / .table-responsive -->
+                <div>
+                    <p class="text-center">Cron Schedules</p>
+                </div>
                 {% for cron in crons %}
+                <div class="card mb-3">
+                    <div class="card-header">{{cron['schedule']}}</div>
+                    <div class="card-body">
+                      <h5 class="card-title">{{cron['schedule_readable']}}</h5>
+                      <p class="card-text">
+                        {{cron['job_detail']}}
+                      </p>
+                      <form class="row g-2">
+                        <div class="col-auto">
+                          <input type="hidden" name="prev-cron" value="{{cron['job_detail']}}" class="visually-hidden">
+                          <input
+                            type="text"
+                            name="new-cron"
+                            class="form-control"
+                            placeholder="New Schedule"/>
+                        </div>
+                        <div class="col-auto">
+                          <button type="submit" class="btn btn-primary mb-3 update-cron-btn">Update</button>
+                        </div>
+                      </form>
+                    </div>
+                </div>
+                {% endfor %}
+                <!-- {% for cron in crons %}
                     <div>{{cron['schedule_readable']}}</div>
                     <div>{{cron['schedule']}}</div>
                     <div>{{cron['job_detail']}}</div>
@@ -76,7 +72,7 @@
                         <input type="hidden" name="prev-cron" value="{{cron}}">
                         <button type="button" class="update-cron-btn">Update Schedule</button>
                     </form>
-                {% endfor %}
+                {% endfor %} -->
                 
             </div>
             <div>
