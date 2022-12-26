@@ -1,0 +1,21 @@
+models:
+  - id: >-
+      U2l0ZXNjb3BlfE9CQXxXZWIgU2VydmljZXxEQ3xUcmFuc2FjdGlvbnxUcmFuc2FjdGlvbnxPQkF8QnVzaW5lc3MgVHJhbnNhY3Rpb258YWRhdmFudGFnZXx0cmFuc2ZlciB0cmFuc2FjdGlvbnxUcmFuc2FjdGlvbiBDb3VudHxjb250ZW50IG1hdGNo
+    key: >-
+      Sitescope|OBA|Web Service|DC|Transaction|Transaction|OBA|Business Transaction|adavantage|transfer transaction|Transaction Count|content match
+    timestep: 60
+    granularity: 1H
+    realtime_granularity: 1T
+    preprocess:
+      regression: >-
+        preprocess/U2l0ZXNjb3BlfE9CQXxXZWIgU2VydmljZXxEQ3xUcmFuc2FjdGlvbnxUcmFuc2FjdGlvbnxPQkF8QnVzaW5lc3MgVHJhbnNhY3Rpb258YWRhdmFudGFnZXx0cmFuc2ZlciB0cmFuc2FjdGlvbnxUcmFuc2FjdGlvbiBDb3VudHxjb250ZW50IG1hdGNo/pickled_regressor.pkl
+      seasonality: weekly
+      previous_value: >-
+        preprocess/U2l0ZXNjb3BlfE9CQXxXZWIgU2VydmljZXxEQ3xUcmFuc2FjdGlvbnxUcmFuc2FjdGlvbnxPQkF8QnVzaW5lc3MgVHJhbnNhY3Rpb258YWRhdmFudGFnZXx0cmFuc2ZlciB0cmFuc2FjdGlvbnxUcmFuc2FjdGlvbiBDb3VudHxjb250ZW50IG1hdGNo/previous_value.pkl
+      previous_y_hat: >-
+        preprocess/U2l0ZXNjb3BlfE9CQXxXZWIgU2VydmljZXxEQ3xUcmFuc2FjdGlvbnxUcmFuc2FjdGlvbnxPQkF8QnVzaW5lc3MgVHJhbnNhY3Rpb258YWRhdmFudGFnZXx0cmFuc2ZlciB0cmFuc2FjdGlvbnxUcmFuc2FjdGlvbiBDb3VudHxjb250ZW50IG1hdGNo/pickled_y_hat.pkl
+      previous_y_test: >-
+        preprocess/U2l0ZXNjb3BlfE9CQXxXZWIgU2VydmljZXxEQ3xUcmFuc2FjdGlvbnxUcmFuc2FjdGlvbnxPQkF8QnVzaW5lc3MgVHJhbnNhY3Rpb258YWRhdmFudGFnZXx0cmFuc2ZlciB0cmFuc2FjdGlvbnxUcmFuc2FjdGlvbiBDb3VudHxjb250ZW50IG1hdGNo/pickled_y_test.pkl
+      z_score: >-
+        preprocess/U2l0ZXNjb3BlfE9CQXxXZWIgU2VydmljZXxEQ3xUcmFuc2FjdGlvbnxUcmFuc2FjdGlvbnxPQkF8QnVzaW5lc3MgVHJhbnNhY3Rpb258YWRhdmFudGFnZXx0cmFuc2ZlciB0cmFuc2FjdGlvbnxUcmFuc2FjdGlvbiBDb3VudHxjb250ZW50IG1hdGNo/pickled_z_score.pkl
+      seasonality: hourly

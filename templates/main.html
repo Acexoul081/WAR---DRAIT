@@ -59,7 +59,7 @@
                           </tr>
                       </thead>
                       <tbody>
-                          {% for model in model_data %}
+                          {% for model in infra_data %}
                           <tr style="padding: 10px;">
                               <td></td>
                               <td>
@@ -70,6 +70,17 @@
                               </td>
                               <td class="text-muted">{{model['metric_type']}}</td>
                               <td class="text-end"><span class="badge text-bg-success rounded-pill">{{model['source']}}</span></td>
+                          </tr>
+                          {% endfor %}
+
+                          {% for model in trans_data %}
+                          <tr style="padding: 10px;">
+                              <td></td>
+                              <td>
+                                  <a class="metric_url" href="{{ url_for('show_metric', metric=model['id']) }}">{{model['id']}}</a>
+                              </td>
+                              <td class="text-muted">{{model['key']}}</td>
+                              <td class="text-end"><span class="badge text-bg-success rounded-pill">{{model['key']}}</span></td>
                           </tr>
                           {% endfor %}
                       </tbody>

@@ -29,13 +29,21 @@ client.load_system_host_keys()
 client.set_missing_host_key_policy(AutoAddPolicy())
 client.connect('172.16.11.137', username='admin', password='P@ssword1234')
 
-model_metadata = {}
+infra_metadata = {}
+transaction_metadata = {}
 with open("preprocess.yaml") as f:
     config = yaml.safe_load(f)
     for model in config['models']:
-        model_metadata[model['id']] = {
+        infra_metadata[model['id']] = {
             'name': model['name'], 
             'tag': model['tag'],
+            'key': model['key']
+        }
+
+with open("realtime transaction.yaml") as f:
+    config = yaml.safe_load(f)
+    for model in config['models']:
+        transaction_metadata[model['id']] = {
             'key': model['key']
         }
 
@@ -47,21 +55,32 @@ Session = sessionmaker(bind=db.engine)
 @app.route('/')
 def main_page():
     global config
-    model_data = []
-    if config['models'] is not None:
-        for model in config['models']:
+    infra_data = []
+    trans_data = []
+    if infra_metadata:
+        for id, model in infra_metadata.items():
             key_split = model['key'].split('|')
             ip = key_split[0]
             data_source = key_split[1]
             metric_type = key_split[3]
-            model_data.append({
+            infra_data.append({
                 'key':model['key'],
-                'id':model['id'],
+                'id':id,
                 'ip':ip,
                 'source':data_source,
                 'metric_type':metric_type
-                })
-    return render_template('main.html', model_data=model_data)
+            })
+    if transaction_metadata:
+        for id, model in transaction_metadata.items():
+            key_split = model['key'].split('|')
+            ip = key_split[0]
+            data_source = key_split[1]
+            metric_type = key_split[3]
+            trans_data.append({
+                'key':model['key'],
+                'id':id
+            })
+    return render_template('main.html', infra_data=infra_data, trans_data=trans_data)
 
 @app.route('/metric/<metric>', methods=['GET', 'POST'])
 def show_metric(metric):
@@ -127,24 +146,35 @@ def create_value_graph(dataset, anomalies, target_column):
 
 def get_value(metric):
     db_session = Session()
+    if metric in infra_metadata:
+        loss_metric_key = infra_metadata[metric]['key']
+        value = db_session.query(db.metrics).filter(
+        and_(
+            db.metrics.tag == infra_metadata[metric]['tag'], 
+            db.metrics.metric_name == infra_metadata[metric]['name']),
+            func.TIMESTAMPDIFF(text('month'),db.metrics.metric_datetime,func.now()) <= 1
+        ).order_by(desc(db.metrics.metric_datetime))
+    else:
+        loss_metric_key = transaction_metadata[metric]['key']
+        value = db_session.query(db.transactions).filter(
+        and_(
+            db.transactions.tag == transaction_metadata[metric]['key'], 
+            func.TIMESTAMPDIFF(text('month'),db.transactions.metric_datetime,func.now()) <= 1
+        )
+        ).order_by(desc(db.transactions.metric_datetime))
+        
+
     loss = db_session.query(db.losses).filter(
         and_(
-            db.losses.metric_key == model_metadata[metric]['key'],
+            db.losses.metric_key == loss_metric_key,
             func.TIMESTAMPDIFF(text('month'),db.losses.timestamp,func.now()) <= 1
         )
     ).order_by(desc(db.losses.timestamp))
-    value = db_session.query(db.metrics).filter(
-        and_(
-            db.metrics.tag == model_metadata[metric]['tag'], 
-            db.metrics.metric_name == model_metadata[metric]['name']),
-            func.TIMESTAMPDIFF(text('month'),db.metrics.metric_datetime,func.now()) <= 1
-        ).order_by(desc(db.metrics.metric_datetime))
 
     loss = pd.read_sql(loss.statement, loss.session.bind)
     value = pd.read_sql(value.statement, value.session.bind)
     loss.rename(columns = {'timestamp':'metric_datetime'}, inplace = True)
     return value,loss
-    #buat yg metric ke transaction pakai tagnya Tamim aja
 
 def get_model_version(metric):
     global PORT, channel
@@ -190,8 +220,11 @@ def change_static_threshold():
 def get_static_threshold(metric):
     db_session = Session()
     session['threshold'] = 'static'
-    threshold = db_session.query(db.thresholds).filter(db.thresholds.metric_key == model_metadata[metric]['key'])
-
+    if metric in infra_metadata:
+        threshold_metric_key = infra_metadata[metric]['key']
+    else:
+        threshold_metric_key = transaction_metadata[metric]['key']
+    threshold = db_session.query(db.thresholds).filter(db.thresholds.metric_key == threshold_metric_key)
     threshold = pd.read_sql(threshold.statement, threshold.session.bind)
 
     if threshold.empty:
@@ -207,9 +240,14 @@ def change_dynamic_threshold():
 
 def get_dynamic_threshold(metric, first_date):
     db_session = Session()
+    if metric in infra_metadata:
+        anomaly_metric_key = infra_metadata[metric]['key']
+    else:
+        anomaly_metric_key = transaction_metadata[metric]['key']
+        
     threshold_query = db_session.query(db.anomalies).filter(
         and_(
-            db.anomalies.metric_key == model_metadata[metric]['key'],
+            db.anomalies.metric_key == infra_metadata[metric]['key'],
             db.anomalies.end_time > first_date
         )   
         ).order_by(desc(db.anomalies.start_time))
