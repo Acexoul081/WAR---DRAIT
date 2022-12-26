@@ -170,3 +170,14 @@ footer{
 .custom-tooltip {
   --bs-tooltip-bg: var(--bs-primary);
 }
+
+table {
+  width: 50%;
+  counter-reset: row-num -1;
+}
+table tr {
+  counter-increment: row-num;
+}
+table tr td:first-child::before {
+    content: counter(row-num) "";
+}

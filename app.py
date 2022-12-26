@@ -18,6 +18,7 @@ from tensorflow_serving.apis import model_service_pb2_grpc
 from tensorflow_serving.apis import get_model_status_pb2
 from tensorflow_serving.apis import get_model_metadata_pb2
 from google.protobuf.json_format import MessageToJson
+from cron_descriptor import get_description, ExpressionDescriptor
 
 import db
 
@@ -78,6 +79,18 @@ def show_metric(metric):
 
         stdin,stdout,stderr = client.exec_command(f"crontab -l | grep \"{decoded_metric}\"")
         cron_info = stdout.read().decode('utf-8').strip().split('\n')
+        cron_list = []
+        print(decoded_metric)
+        print(len(cron_info))
+        if len(cron_info) > 0:
+            print(cron_info)
+            for i in cron_info:
+                if len(i) > 0:
+                    cron_list.append({
+                        'job_detail':i,
+                        'schedule':i[0:i.index("p")],
+                        'schedule_readable':get_description(i[0:i.index("p")])
+                    })
 
         val_graph_json = create_value_graph(value, value_anomalies, 'metric_value')
         loss_graph_json = create_value_graph(loss, loss_anomalies, 'loss')
@@ -91,7 +104,7 @@ def show_metric(metric):
             'type':decoded_metric_in_list[3]
         }
         
-        return render_template('metric.html', metric=metric_detail, valueGraph=val_graph_json, lossGraph=loss_graph_json, preprocGraph= preproc_graph_json, modelStatus=model_version, crons = cron_info if cron_info else 'No Cron Available')
+        return render_template('metric.html', metric=metric_detail, valueGraph=val_graph_json, lossGraph=loss_graph_json, preprocGraph= preproc_graph_json, modelStatus=model_version, crons = cron_list if cron_info else 'No Cron Available')
 
     elif request.method == 'POST':   
         value, loss = get_value(metric)
@@ -219,6 +232,7 @@ def get_dynamic_threshold(metric, first_date):
 @app.route('/update-cron', methods=['POST'])
 def update_cron_tab():
     data = request.args.get('data')
+    print(data)
     new_cron = request.form['new-cron']
     prev_cron = request.form['prev-cron']
     new_cron_script = prev_cron.replace(prev_cron[0 : len(new_cron)], new_cron, 1)
