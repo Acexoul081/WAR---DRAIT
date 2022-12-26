@@ -74,12 +74,16 @@ def main_page():
     if transaction_metadata:
         for id, model in transaction_metadata.items():
             key_split = model['key'].split('|')
-            ip = key_split[0]
-            data_source = key_split[1]
-            metric_type = key_split[3]
+            print(key_split)
+            app_name = key_split[1]
+            data_source = key_split[0]
+            metric_type = key_split[7]
             trans_data.append({
                 'key':model['key'],
-                'id':id
+                'id':id,
+                'app_name':app_name,
+                'source':data_source,
+                'metric_type':metric_type,
             })
     return render_template('main.html', infra_data=infra_data, trans_data=trans_data)
 

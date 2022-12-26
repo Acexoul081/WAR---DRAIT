@@ -47,7 +47,7 @@
                   </div> -->
               </div>
 
-              <!-- Table -->
+              <!-- Table Infra -->
               <div class="table-responsive">
                   <table id="projectsTable" class="table align-middle table-edge table-nowrap mb-0">
                       <thead class="thead-light">
@@ -72,20 +72,42 @@
                               <td class="text-end"><span class="badge text-bg-success rounded-pill">{{model['source']}}</span></td>
                           </tr>
                           {% endfor %}
-
-                          {% for model in trans_data %}
-                          <tr style="padding: 10px;">
-                              <td></td>
-                              <td>
-                                  <a class="metric_url" href="{{ url_for('show_metric', metric=model['id']) }}">{{model['id']}}</a>
-                              </td>
-                              <td class="text-muted">{{model['key']}}</td>
-                              <td class="text-end"><span class="badge text-bg-success rounded-pill">{{model['key']}}</span></td>
-                          </tr>
-                          {% endfor %}
                       </tbody>
                   </table>
               </div> <!-- / .table-responsive -->
+
+              <div class="card-header border-0 card-header-space-between">
+                  
+                <!-- Title -->
+                <h2 class="card-header-title h4 text-uppercase">
+                    Choose Your Application to Monitor
+                </h2>
+              </div>
+              <!-- Table Application -->
+              <div class="table-responsive">
+                <table id="projectsTable" class="table align-middle table-edge table-nowrap mb-0">
+                    <thead class="thead-light">
+                        <tr>
+                            <th class="w-60px">No</th>
+                            <th>Application</th>
+                            <th>Metric Type</th>
+                            <th class="text-end">Source</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for model in trans_data %}
+                        <tr style="padding: 10px;">
+                            <td></td>
+                            <td>
+                                <a class="metric_url" href="{{ url_for('show_metric', metric=model['id']) }}">{{model['app_name']}}</a>
+                            </td>
+                            <td class="text-muted">{{model['metric_type']}}</td>
+                            <td class="text-end"><span class="badge text-bg-success rounded-pill">{{model['source']}}</span></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div> <!-- / .table-responsive -->
           </div>
       </div>
 
