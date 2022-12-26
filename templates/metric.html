@@ -47,7 +47,12 @@
                       <p class="card-text">
                         {{cron['job_detail']}}
                       </p>
-                      <form class="row g-2">
+                    <form class="col g-2">
+                        <input type="text" class="form-control" name="new-cron" placeholder="new schedule">
+                        <input type="hidden" name="prev-cron" value="{{cron['job_detail']}}">
+                        <!-- <button type="button" class="btn btn-primary update-cron-btn">Update Schedule</button> -->
+                    </form>
+                      <!-- <form class="row g-2">
                         <div class="col-auto">
                           <input type="hidden" name="prev-cron" value="{{cron['job_detail']}}">
                           <input type="text" name="new-cron" placeholder="New Schedule">
@@ -55,7 +60,7 @@
                         <div class="col-auto">
                           <button type="button" class="update-cron-btn">Update</button>
                         </div>
-                      </form>
+                      </form> -->
                     </div>
                 </div>
                 {% endfor %}
