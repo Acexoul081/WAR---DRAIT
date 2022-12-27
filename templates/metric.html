@@ -15,12 +15,48 @@
     </div>
 
     <div class="model_detail">
-        <h3 class="model_title">Server IP &nbsp;&nbsp;&nbsp;&nbsp;: {{metric['ip']}}</h3>
-        <h3 class="model_title">Metric Type : {{metric['type']}}</h3>
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+            <div>
+                <!-- <h3 class="model_title">Server IP &nbsp;&nbsp;&nbsp;&nbsp;: {{metric['ip']}}</h3>
+                <h3 class="model_title">Metric Type : {{metric['type']}}</h3> -->
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">Server IP : {{metric['ip']}}</li>
+                    <li class="list-group-item">Metric Type : {{metric['type']}}</li>
+                </ul>
+            </div>
+            <div>
+                <div>Model Status</div>
+                {% for stat in modelStatus %}
+                <div>
+                    Version: {{stat.version}}
+                    <div class="vr mx-1"></div>
+                    State: {{stat.state}}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="btn-toolbar mb-2 mb-md-0 d-flex justify-content-center">
+            <div class="btn-group me-2" role="group" aria-label="Basic radio toggle button group">
+              <input type="radio" class="btn-check" name="btnradio" id="static-btn" autocomplete="off" checked="">
+              <label class="btn btn-sm btn-outline-primary" for="static-btn"
+                  data-bs-toggle="tooltip" data-bs-placement="top"
+                  data-bs-custom-class="custom-tooltip"
+                  data-bs-title="This top tooltip is themed via CSS variables.Lorem ipsum dolor sit, amet consectetur adipisicing elit. Ab est dolore molestias eos eveniet ad qui ipsum architecto nulla in.">
+                  Static Thresholding</label>
+              <input type="radio" class="btn-check" name="btnradio" id="dynamic-btn" autocomplete="off">
+              <label class="btn btn-sm btn-outline-primary" for="dynamic-btn"
+                  data-bs-toggle="tooltip" data-bs-placement="top"
+                  data-bs-custom-class="custom-tooltip"
+                  data-bs-title="This top tooltip is themed via CSS variables.">
+                  Dynamic Thresholding</label>
+            </div>
+        </div>
+
         <div class="chart" id="value"></div>
         <div class="chart" id="loss"></div>
         <div class="chart" id="preproc"></div>
-        <div class="thresholding_option">
+        <!-- <div class="thresholding_option">
             <button class='button -regular center' type="button" id="static-btn"
                 data-bs-toggle="tooltip" data-bs-placement="top"
                 data-bs-custom-class="custom-tooltip"
@@ -33,34 +69,29 @@
                 data-bs-title="This top tooltip is themed via CSS variables.">
                 Dynamic Thresholding
             </button>
-        </div>
+        </div> -->
         <div>
             <div>
                 <div>
-                    <p class="text-center">Cron Schedules</p>
+                    <p class="text-center fs-3 align-items-center pt-3 pb-2 mb-3 border-bottom">Cron Schedules</p>
                 </div>
                 {% for cron in crons %}
                 <div class="card mb-3">
-                    <div class="card-header">{{cron['schedule']}}</div>
+                    <div class="card-header">
+                        {{cron['schedule']}}
+                        <div class="vr mx-1"></div>
+                        {{cron['schedule_readable']}}
+                    </div>
                     <div class="card-body">
-                      <h5 class="card-title">{{cron['schedule_readable']}}</h5>
-                      <p class="card-text">
-                        {{cron['job_detail']}}
-                      </p>
-                    <form class="col g-2">
-                        <input type="text" class="form-control" name="new-cron" placeholder="new schedule">
-                        <input type="hidden" name="prev-cron" value="{{cron['job_detail']}}">
-                        <!-- <button type="button" class="btn btn-primary update-cron-btn">Update Schedule</button> -->
-                    </form>
-                      <!-- <form class="row g-2">
-                        <div class="col-auto">
-                          <input type="hidden" name="prev-cron" value="{{cron['job_detail']}}">
-                          <input type="text" name="new-cron" placeholder="New Schedule">
-                        </div>
-                        <div class="col-auto">
-                          <button type="button" class="update-cron-btn">Update</button>
-                        </div>
-                      </form> -->
+                        <h5 class="card-title">{{cron['schedule_readable']}}</h5>
+                        <p class="card-text">
+                            {{cron['job_detail']}}
+                        </p>
+                        <form class="row g-2">
+                            <input type="text" class="form-control" name="new-cron" placeholder="new schedule">
+                            <input type="hidden" name="prev-cron" value="{{cron['job_detail']}}">
+                            <button type="button" class="btn btn-primary update-cron-btn">Update Schedule</button>
+                        </form>
                     </div>
                 </div>
                 {% endfor %}
@@ -75,15 +106,6 @@
                     </form>
                 {% endfor %} -->
                 
-            </div>
-            <div>
-                <div>Model Status</div>
-                {% for stat in modelStatus %}
-                <div>
-                    Version: {{stat.version}}
-                    State: {{stat.state}}
-                </div>
-                {% endfor %}
             </div>
         </div>
     </div>
