@@ -56,57 +56,49 @@
         <div class="chart" id="value"></div>
         <div class="chart" id="loss"></div>
         <div class="chart" id="preproc"></div>
-        <!-- <div class="thresholding_option">
-            <button class='button -regular center' type="button" id="static-btn"
-                data-bs-toggle="tooltip" data-bs-placement="top"
-                data-bs-custom-class="custom-tooltip"
-                data-bs-title="This top tooltip is themed via CSS variables.Lorem ipsum dolor sit, amet consectetur adipisicing elit. Ab est dolore molestias eos eveniet ad qui ipsum architecto nulla in.">
-                Static Thresholding
-            </button>
-            <button class='button -regular center' id="dynamic-btn"
-                data-bs-toggle="tooltip" data-bs-placement="top"
-                data-bs-custom-class="custom-tooltip"
-                data-bs-title="This top tooltip is themed via CSS variables.">
-                Dynamic Thresholding
-            </button>
-        </div> -->
+
         <div>
-            <div>
-                <div>
-                    <p class="text-center fs-3 align-items-center pt-3 pb-2 mb-3 border-bottom">Cron Schedules</p>
-                </div>
-                {% for cron in crons %}
-                <div class="card mb-3">
-                    <div class="card-header">
-                        {{cron['schedule']}}
-                        <div class="vr mx-1"></div>
-                        {{cron['schedule_readable']}}
-                    </div>
-                    <div class="card-body">
-                        <h5 class="card-title">{{cron['schedule_readable']}}</h5>
-                        <p class="card-text">
-                            {{cron['job_detail']}}
-                        </p>
-                        <form class="row g-2">
-                            <input type="text" class="form-control" name="new-cron" placeholder="new schedule">
-                            <input type="hidden" name="prev-cron" value="{{cron['job_detail']}}">
-                            <button type="button" class="btn btn-primary update-cron-btn">Update Schedule</button>
-                        </form>
-                    </div>
-                </div>
-                {% endfor %}
-                <!-- {% for cron in crons %}
-                    <div>{{cron['schedule_readable']}}</div>
-                    <div>{{cron['schedule']}}</div>
-                    <div>{{cron['job_detail']}}</div>
-                    <form>
-                        <input type="text" name="new-cron" placeholder="new schedule">
-                        <input type="hidden" name="prev-cron" value="{{cron}}">
-                        <button type="button" class="update-cron-btn">Update Schedule</button>
-                    </form>
-                {% endfor %} -->
-                
+            <p class="text-start fs-3 align-items-center pt-3 pb-2 mb-3 border-bottom">Cron Schedules</p>
+        </div>
+        {% for cron in crons %}
+        <div class="card mb-3">
+            <div class="card-header">
+                {{cron['schedule']}}
+                <div class="vr mx-1"></div>
+                {{cron['schedule_readable']}}
             </div>
+            <div class="card-body">
+                <h5 class="card-title">{{cron['schedule_readable']}}</h5>
+                <p class="card-text">
+                    {{cron['job_detail']}}
+                </p>
+                <form class="row g-2">
+                    <input type="text" class="form-control text-center" name="new-cron" placeholder="New Schedule">
+                    <input type="hidden" name="prev-cron" value="{{cron['job_detail']}}">
+                    <button type="button" class="btn btn-primary update-cron-btn col-sm-2 mx-auto">Update Schedule</button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+        <!-- {% for cron in crons %}
+            <div>{{cron['schedule_readable']}}</div>
+            <div>{{cron['schedule']}}</div>
+            <div>{{cron['job_detail']}}</div>
+            <form>
+                <input type="text" name="new-cron" placeholder="new schedule">
+                <input type="hidden" name="prev-cron" value="{{cron}}">
+                <button type="button" class="update-cron-btn">Update Schedule</button>
+            </form>
+        {% endfor %} -->
+              
+        <div>
+            <p class="text-start fs-3 align-items-center pt-3 pb-2 mb-3 border-bottom">Cron Finder</p>
+        </div>
+        <div class="card mb-3">
+            <div class="card-header text-center fst-italic fw-semibold fs-3" id="cron_label">
+                <p id="cron_label"></p>
+            </div>
+            <input type="text" value="* * * * *" id="cron_input" class="card-body rounded-bottom border-0 form-control text-center fs-3" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
         </div>
     </div>
 </body>
@@ -135,6 +127,7 @@
 <script type="text/javascript" src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script type="text/javascript" src="{{ url_for('static', filename='metric/index.js')}}"></script>
+<script src="https://unpkg.com/cronstrue@latest/dist/cronstrue.min.js" async></script>
 
 <script type="text/javascript">
     const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
@@ -161,10 +154,10 @@
     };
 
     $(document).ready(function() {
-        //
         var interval = 1000 * 60 * 1;
-        setInterval(ajax_call, interval);
+        setInterval(ajax_call, interval); 
     });
+    
 </script>
 
 </html>
