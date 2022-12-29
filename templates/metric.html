@@ -38,13 +38,13 @@
 
         <div class="btn-toolbar mb-2 mb-md-0 d-flex justify-content-center">
             <div class="btn-group me-2" role="group" aria-label="Basic radio toggle button group">
-              <input type="radio" class="btn-check" name="btnradio" id="static-btn" autocomplete="off" checked="">
+              <input type="radio" class="btn-check" name="btnradio" id="static-btn" autocomplete="off" checked="" value="{{metric['key']}}">
               <label class="btn btn-sm btn-outline-primary" for="static-btn"
                   data-bs-toggle="tooltip" data-bs-placement="top"
                   data-bs-custom-class="custom-tooltip"
                   data-bs-title="This top tooltip is themed via CSS variables.Lorem ipsum dolor sit, amet consectetur adipisicing elit. Ab est dolore molestias eos eveniet ad qui ipsum architecto nulla in.">
                   Static Thresholding</label>
-              <input type="radio" class="btn-check" name="btnradio" id="dynamic-btn" autocomplete="off">
+              <input type="radio" class="btn-check" name="btnradio" id="dynamic-btn" autocomplete="off" value="{{metric['key']}}">
               <label class="btn btn-sm btn-outline-primary" for="dynamic-btn"
                   data-bs-toggle="tooltip" data-bs-placement="top"
                   data-bs-custom-class="custom-tooltip"
