@@ -42,13 +42,13 @@
               <label class="btn btn-sm btn-outline-primary" for="static-btn"
                   data-bs-toggle="tooltip" data-bs-placement="top"
                   data-bs-custom-class="custom-tooltip"
-                  data-bs-title="Single threshold or single bounds applied for all data points.">
+                  data-bs-title="Single threshold or single bounds applied for all data points. Anomalies are defined when the metric value exceeded this threshold value.">
                   Static Thresholding</label>
               <input type="radio" class="btn-check" name="btnradio" id="dynamic-btn" autocomplete="off" value="{{metric['key']}}">
               <label class="btn btn-sm btn-outline-primary" for="dynamic-btn"
                   data-bs-toggle="tooltip" data-bs-placement="top"
                   data-bs-custom-class="custom-tooltip"
-                  data-bs-title="Threshold or bounds that are continuously and dynamically adapt for each particular data points.">
+                  data-bs-title="Threshold or bounds that are continuously and dynamically adapt for each particular data points. Anomalies are defined when the metric value exceeded this threshold value.">
                   Dynamic Thresholding</label>
             </div>
         </div>
