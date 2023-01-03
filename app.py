@@ -110,7 +110,7 @@ def show_metric(metric):
                 if len(i) > 0:
                     cron_list.append({
                         'job_detail':i,
-                        'schedule':i[0:i.index("p")],
+                        'schedule':i[0:i.index("p")-1],
                         'schedule_readable':get_description(i[0:i.index("p")])
                     })
 

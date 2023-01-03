@@ -73,7 +73,7 @@
                     {{cron['job_detail']}}
                 </p>
                 <form class="row g-2">
-                    <input type="text" class="form-control text-center" name="new-cron" placeholder="New Schedule">
+                    <input type="text" class="form-control text-center" name="new-cron" placeholder="{{cron['schedule']}}" value="{{cron['schedule']}}">
                     <input type="hidden" name="prev-cron" value="{{cron['job_detail']}}">
                     <button type="button" class="btn btn-primary update-cron-btn col-sm-2 mx-auto">Update Schedule</button>
                 </form>
