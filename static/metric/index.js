@@ -73,6 +73,7 @@ $('.update-cron-btn').click(function(e){
 
 $('#cron_input').on('input', function(e){
     // console.log($(this).val());
+    console.log(checkIfStringHasSpecialChar($(this).val()));
     try {
         result = cronstrue.toString($(this).val())
     } catch (error) {
@@ -93,6 +94,16 @@ $(document).ready(function() {
     result = cronstrue.toString("* * * * *")
     $('#cron_label').text("\""+result+"\"");
 });
+
+function checkIfStringHasSpecialChar(_string)
+{
+    let spChars = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/;
+    if(spChars.test(_string)){
+      return true;
+    } else {
+      return false;
+    }
+}
 
 function checkCron(cron){
     try {

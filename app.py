@@ -109,9 +109,14 @@ def show_metric(metric):
             print(cron_info)
             for i in cron_info:
                 if len(i) > 0:
+                    job = ''
+                    if 'train' in i:
+                        job = "Train Model"
+                    elif 'renew' in i:
+                        job = "Update Preprocessing Data"
                     cron_list.append({
-                        'job_detail':i,
-                        'schedule':i[0:i.index("p")],
+                        'job_detail':job,
+                        'schedule':i[0:i.index("p")-1],
                         'schedule_readable':get_description(i[0:i.index("p")])
                     })
 

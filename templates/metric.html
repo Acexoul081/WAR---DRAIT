@@ -42,13 +42,13 @@
               <label class="btn btn-sm btn-outline-primary" for="static-btn"
                   data-bs-toggle="tooltip" data-bs-placement="top"
                   data-bs-custom-class="custom-tooltip"
-                  data-bs-title="This top tooltip is themed via CSS variables.Lorem ipsum dolor sit, amet consectetur adipisicing elit. Ab est dolore molestias eos eveniet ad qui ipsum architecto nulla in.">
+                  data-bs-title="Single threshold or single bounds applied for all data points. Anomalies are defined when the metric value exceeded this threshold value.">
                   Static Thresholding</label>
               <input type="radio" class="btn-check" name="btnradio" id="dynamic-btn" autocomplete="off" value="{{metric['key']}}">
               <label class="btn btn-sm btn-outline-primary" for="dynamic-btn"
                   data-bs-toggle="tooltip" data-bs-placement="top"
                   data-bs-custom-class="custom-tooltip"
-                  data-bs-title="This top tooltip is themed via CSS variables.">
+                  data-bs-title="Threshold or bounds that are continuously and dynamically adapt for each particular data points. Anomalies are defined when the metric value exceeded this threshold value.">
                   Dynamic Thresholding</label>
             </div>
         </div>
@@ -73,7 +73,7 @@
                     {{cron['job_detail']}}
                 </p>
                 <form class="row g-2">
-                    <input type="text" class="form-control text-center" name="new-cron" placeholder="New Schedule">
+                    <input type="text" class="form-control text-center" name="new-cron" placeholder="{{cron['schedule']}}" value="{{cron['schedule']}}">
                     <input type="hidden" name="prev-cron" value="{{cron['job_detail']}}">
                     <button type="button" class="btn btn-primary update-cron-btn col-sm-2 mx-auto">Update Schedule</button>
                 </form>
