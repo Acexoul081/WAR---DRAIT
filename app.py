@@ -110,7 +110,6 @@ def show_metric(metric):
             for i in cron_info:
                 if len(i) > 0:
                     job = ''
-                    print(i)
                     if 'train' in i:
                         job = "Train Model"
                     elif 'renew' in i:
