@@ -307,7 +307,6 @@ def update_cron_tab(request):
     
     stdin,stdout,stderr = client.exec_command(f"crontab -l | grep -v '{prev_cron[len(new_cron)+1:].split('$')[0]}'  | crontab -")
     stdin,stdout,stderr = client.exec_command(f"(crontab -l ; echo '{new_cron_script}') | crontab -")
-    return '', 204
 
 @app.route('/cron/<metric>', methods=['GET', 'POST'])
 def index_cron(metric):
@@ -330,9 +329,10 @@ def index_cron(metric):
                         'schedule':i[0:i.index("p")-1],
                         'schedule_readable':get_description(i[0:i.index("p")])
                     })
-        return render_template('cron.html', crons = cron_list if cron_info else 'No Cron Available')
+        return render_template('cron.html', crons = cron_list if cron_info else 'No Cron Available', metric=metric)
     elif request.method == 'POST':
         update_cron_tab(request)
+        return '', 204
 
 @app.route('/about-us')
 def show_aboutus():
