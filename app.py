@@ -101,26 +101,6 @@ def show_metric(metric):
 
         model_version = get_model_version(metric)
 
-        stdin,stdout,stderr = client.exec_command(f"crontab -l | grep -F \"{decoded_metric}\"")
-        cron_info = stdout.read().decode('utf-8').strip().split('\n')
-        cron_list = []
-
-        if len(cron_info) > 0:
-            print(cron_info)
-            for cron_job in cron_info:
-                if len(cron_job) > 0:
-                    job_desc = ''
-                    if 'train' in cron_job:
-                        job_desc = "Train Model"
-                    elif 'renew' in cron_job:
-                        job_desc = "Update Preprocessing Data"
-                    cron_list.append({
-                        'job_description':job_desc,
-                        'job_detail':cron_job,
-                        'schedule':cron_job[0:cron_job.index("p")-1],
-                        'schedule_readable':get_description(cron_job[0:cron_job.index("p")])
-                    })
-
         val_graph_json = create_value_graph(value, value_anomalies, 'metric_value')
         loss_graph_json = create_value_graph(loss, loss_anomalies, 'loss', threshold)
         preproc_graph_json = create_value_graph(loss, loss_anomalies, 'value')
@@ -304,14 +284,17 @@ def update_cron_tab(request):
     new_cron = request.form['new-cron']
     prev_cron = request.form['prev-cron']
     new_cron_script = prev_cron.replace(prev_cron[0 : len(new_cron)], new_cron, 1)
-    
-    stdin,stdout,stderr = client.exec_command(f"crontab -l | grep -v '{prev_cron[len(new_cron)+1:].split('$')[0]}'  | crontab -")
+    stdin,stdout,stderr = client.exec_command(f"crontab -l | grep -v -F '{prev_cron[len(new_cron)+1:]}' | crontab -")
     stdin,stdout,stderr = client.exec_command(f"(crontab -l ; echo '{new_cron_script}') | crontab -")
 
 @app.route('/cron/<metric>', methods=['GET', 'POST'])
 def index_cron(metric):
     if request.method == 'GET':
-        stdin,stdout,stderr = client.exec_command(f"crontab -l | grep -F \"{metric}\"")
+        decoded_metric = base64.urlsafe_b64decode(metric).decode("ascii")
+        
+        escaped_string = decoded_metric.translate(str.maketrans({
+                                         "%":  r"\%"}))
+        stdin,stdout,stderr = client.exec_command(f"crontab -l | grep -F \"{escaped_string}\"")
         cron_info = stdout.read().decode('utf-8').strip().split('\n')
         cron_list = []
 
