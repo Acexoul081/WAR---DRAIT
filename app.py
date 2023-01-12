@@ -107,18 +107,18 @@ def show_metric(metric):
 
         if len(cron_info) > 0:
             print(cron_info)
-            for i in cron_info:
-                if len(i) > 0:
-                    job = ''
-                    if 'train' in i:
-                        job = "Train Model"
-                    elif 'renew' in i:
-                        job = "Update Preprocessing Data"
+            for cron_job in cron_info:
+                if len(cron_job) > 0:
+                    job_desc = ''
+                    if 'train' in cron_job:
+                        job_desc = "Train Model"
+                    elif 'renew' in cron_job:
+                        job_desc = "Update Preprocessing Data"
                     cron_list.append({
-                        'job_description':job,
-                        'job_detail':i,
-                        'schedule':i[0:i.index("p")-1],
-                        'schedule_readable':get_description(i[0:i.index("p")])
+                        'job_description':job_desc,
+                        'job_detail':cron_job,
+                        'schedule':cron_job[0:cron_job.index("p")-1],
+                        'schedule_readable':get_description(cron_job[0:cron_job.index("p")])
                     })
 
         val_graph_json = create_value_graph(value, value_anomalies, 'metric_value')
@@ -134,7 +134,7 @@ def show_metric(metric):
             'key': metric
         }
         
-        return render_template('metric.html', metric=metric_detail, valueGraph=val_graph_json, lossGraph=loss_graph_json, preprocGraph= preproc_graph_json, modelStatus=model_version, crons = cron_list if cron_info else 'No Cron Available')
+        return render_template('metric.html', metric=metric_detail, valueGraph=val_graph_json, lossGraph=loss_graph_json, preprocGraph= preproc_graph_json, modelStatus=model_version)
 
     elif request.method == 'POST':
         return get_value_json(metric)
@@ -300,8 +300,7 @@ def get_dynamic_threshold(metric, first_date, loss):
 
     return dynamic_threshold
 
-@app.route('/update-cron', methods=['POST'])
-def update_cron_tab():
+def update_cron_tab(request):
     new_cron = request.form['new-cron']
     prev_cron = request.form['prev-cron']
     new_cron_script = prev_cron.replace(prev_cron[0 : len(new_cron)], new_cron, 1)
@@ -310,6 +309,30 @@ def update_cron_tab():
     stdin,stdout,stderr = client.exec_command(f"(crontab -l ; echo '{new_cron_script}') | crontab -")
     return '', 204
 
+@app.route('/cron/<metric>', methods=['GET', 'POST'])
+def index_cron(metric):
+    if request.method == 'GET':
+        stdin,stdout,stderr = client.exec_command(f"crontab -l | grep -F \"{metric}\"")
+        cron_info = stdout.read().decode('utf-8').strip().split('\n')
+        cron_list = []
+
+        if len(cron_info) > 0:
+            print(cron_info)
+            for i in cron_info:
+                if len(i) > 0:
+                    job = ''
+                    if 'train' in i:
+                        job = "Train Model"
+                    elif 'renew' in i:
+                        job = "Update Preprocessing Data"
+                    cron_list.append({
+                        'job_detail':job,
+                        'schedule':i[0:i.index("p")-1],
+                        'schedule_readable':get_description(i[0:i.index("p")])
+                    })
+        return render_template('cron.html', crons = cron_list if cron_info else 'No Cron Available')
+    elif request.method == 'POST':
+        update_cron_tab(request)
 
 @app.route('/about-us')
 def show_aboutus():
