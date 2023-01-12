@@ -317,17 +317,18 @@ def index_cron(metric):
 
         if len(cron_info) > 0:
             print(cron_info)
-            for i in cron_info:
-                if len(i) > 0:
-                    job = ''
-                    if 'train' in i:
-                        job = "Train Model"
-                    elif 'renew' in i:
-                        job = "Update Preprocessing Data"
+            for cron_job in cron_info:
+                if len(cron_job) > 0:
+                    job_desc = ''
+                    if 'train' in cron_job:
+                        job_desc = "Train Model"
+                    elif 'renew' in cron_job:
+                        job_desc = "Update Preprocessing Data"
                     cron_list.append({
-                        'job_detail':job,
-                        'schedule':i[0:i.index("p")-1],
-                        'schedule_readable':get_description(i[0:i.index("p")])
+                        'job_description':job_desc,
+                        'job_detail':cron_job,
+                        'schedule':cron_job[0:cron_job.index("p")-1],
+                        'schedule_readable':get_description(cron_job[0:cron_job.index("p")])
                     })
         return render_template('cron.html', crons = cron_list if cron_info else 'No Cron Available', metric=metric)
     elif request.method == 'POST':
