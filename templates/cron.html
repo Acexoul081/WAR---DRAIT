@@ -11,26 +11,28 @@
     <div>
         <p class="text-start fs-3 align-items-center pt-3 pb-2 mb-3 border-bottom">Cron Schedules</p>
     </div>
-    {% for cron in crons %}
-    <div class="card mb-3">
-        <div class="card-header">
-            {{cron['schedule']}}
-            <div class="vr mx-1"></div>
-            {{cron['schedule_readable']}}
+    <div id="cron-section">
+        {% for cron in crons %}
+        <div class="card mb-3">
+            <div class="card-header">
+                {{cron['schedule']}}
+                <div class="vr mx-1"></div>
+                {{cron['schedule_readable']}}
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">{{cron['schedule_readable']}}</h5>
+                <p class="card-text">
+                    {{cron['job_description']}}
+                </p>
+                <form class="row g-2">
+                    <input type="text" class="form-control text-center" name="new-cron" placeholder="{{cron['schedule']}}" value="{{cron['schedule']}}">
+                    <input type="hidden" name="prev-cron" value="{{cron['job_detail']}}">
+                    <button type="button" value="{{metric}}" class="btn btn-primary update-cron-btn col-sm-2 mx-auto">Update Schedule</button>
+                </form>
+            </div>
         </div>
-        <div class="card-body">
-            <h5 class="card-title">{{cron['schedule_readable']}}</h5>
-            <p class="card-text">
-                {{cron['job_description']}}
-            </p>
-            <form class="row g-2">
-                <input type="text" class="form-control text-center" name="new-cron" placeholder="{{cron['schedule']}}" value="{{cron['schedule']}}">
-                <input type="hidden" name="prev-cron" value="{{cron['job_detail']}}">
-                <button type="button" value="{{metric}}" class="btn btn-primary update-cron-btn col-sm-2 mx-auto">Update Schedule</button>
-            </form>
-        </div>
+        {% endfor %}
     </div>
-    {% endfor %}
     <!-- {% for cron in crons %}
         <div>{{cron['schedule_readable']}}</div>
         <div>{{cron['schedule']}}</div>
@@ -51,7 +53,7 @@
         </div>
         <input type="text" value="* * * * *" id="cron_input" class="card-body rounded-bottom border-0 form-control text-center fs-3" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
     </div>
-    
+
     <div class="toast-container position-fixed bottom-0 end-0 p-3">
     <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
         <div class="toast-header">

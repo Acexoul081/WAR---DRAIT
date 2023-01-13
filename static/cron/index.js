@@ -22,9 +22,42 @@ $('.update-cron-btn').click(function(e){
             //     // access_token: $("#access_token").val()
             // },
             success: function(result) {
-                sessionStorage.reloadAfterPageLoad = true;
+                console.log('update success')
+                console.log(result.crons)
+                var cronContainer = document.getElementById("cron-section");
+                cronContainer.innerHTML = ''
+
+                result.crons.forEach(element => {
+                    console.log(typeof(element.job_detail))
+                    let section = document.createElement('cron-section');
+                    // section.id = 'sectionId';
+                    // section.className = 'cron-section';
+                    section.innerHTML = `
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            ${element.schedule}
+                            <div class="vr mx-1"></div>
+                            ${element.schedule_readable}
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">${element.schedule_readable}</h5>
+                            <p class="card-text">
+                                ${element.job_description}
+                            </p>
+                            <form class="row g-2">
+                                <input type="text" class="form-control text-center" name="new-cron" placeholder="${element.schedule}" value="${element.schedule}">
+                                <input type="hidden" name="prev-cron" value='${element.job_detail}'>
+                                <button type="button" value="{{metric}}" class="btn btn-primary update-cron-btn col-sm-2 mx-auto">Update Schedule</button>
+                            </form>
+                        </div>
+                    </div>
+                    `;
+                    cronContainer.appendChild(section);
+                });
+
+
+
                 // window.location.reload()
-                console.log(result)
             }
         });
     }else{

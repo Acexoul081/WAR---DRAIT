@@ -10,6 +10,7 @@ from paramiko import SSHClient, AutoAddPolicy
 import base64
 import pandas as pd
 import numpy as np
+from dynamic_threshold import Errors
 
 import grpc
 from tensorflow_serving.apis import predict_pb2
@@ -228,11 +229,15 @@ def get_anomalies(metric, dataset):
         if threshold is not None:
             dataset['anomaly'] = dataset['loss'].ge(threshold)
     elif session['threshold'] == 'dynamic':
-        anom = get_dynamic_threshold(metric, dataset.iloc[-1]['metric_datetime'].to_pydatetime(),dataset['loss'])
+        anom = get_dynamic_threshold(metric, dataset.iloc[-1]['metric_datetime'].to_pydatetime(),dataset)
         
-        for start_index, end_index in zip(anom['start_time'],anom['end_time']):
-            mask = (dataset['metric_datetime'] > start_index) & (dataset['metric_datetime'] <= end_index)
-            dataset.loc[mask,'anomaly'] = True
+        # for start_index, end_index in zip(anom['start_time'],anom['end_time']):
+        #     mask = (dataset['metric_datetime'] > start_index) & (dataset['metric_datetime'] <= end_index)
+        #     dataset.loc[mask,'anomaly'] = True
+
+        dataset['anomaly'] = False
+        for start_index, end_index in anom:
+            dataset['anomaly'][start_index:end_index] = True
 
     anomalies = dataset.loc[dataset['anomaly'] == True]['metric_datetime']
     return anomalies, threshold
@@ -264,21 +269,24 @@ def change_dynamic_threshold():
     return get_value_json(metric)
 
 def get_dynamic_threshold(metric, first_date, loss):
-    db_session = Session()
-    if metric in infra_metadata:
-        anomaly_metric_key = infra_metadata[metric]['key']
-    else:
-        anomaly_metric_key = transaction_metadata[metric]['key']
+    # db_session = Session()
+    # if metric in infra_metadata:
+    #     anomaly_metric_key = infra_metadata[metric]['key']
+    # else:
+    #     anomaly_metric_key = transaction_metadata[metric]['key']
         
-    threshold_query = db_session.query(db.anomalies).filter(
-        and_(
-            db.anomalies.metric_key == anomaly_metric_key,
-            db.anomalies.end_time > first_date
-        )   
-        ).order_by(asc(db.anomalies.start_time))
-    dynamic_threshold = pd.read_sql(threshold_query.statement, threshold_query.session.bind)
+    # threshold_query = db_session.query(db.anomalies).filter(
+    #     and_(
+    #         db.anomalies.metric_key == anomaly_metric_key,
+    #         db.anomalies.end_time > first_date
+    #     )   
+    #     ).order_by(asc(db.anomalies.start_time))
+    # dynamic_threshold = pd.read_sql(threshold_query.statement, threshold_query.session.bind)
 
-    return dynamic_threshold
+    test_errors = Errors(loss['loss'], loss['value'], 30)
+    test_errors.process_batches()
+
+    return test_errors.E_seq
 
 def update_cron_tab(request):
     new_cron = request.form['new-cron']
@@ -287,36 +295,39 @@ def update_cron_tab(request):
     stdin,stdout,stderr = client.exec_command(f"crontab -l | grep -v -F '{prev_cron[len(new_cron)+1:]}' | crontab -")
     stdin,stdout,stderr = client.exec_command(f"(crontab -l ; echo '{new_cron_script}') | crontab -")
 
+def get_cron(metric_key):
+    stdin,stdout,stderr = client.exec_command(f"crontab -l | grep -F \"{metric_key}\"")
+    cron_info = stdout.read().decode('utf-8').strip().split('\n')
+    cron_list = []
+
+    if len(cron_info) > 0:
+        for cron_job in cron_info:
+            if len(cron_job) > 0:
+                job_desc = ''
+                if 'train' in cron_job:
+                    job_desc = "Train Model"
+                elif 'renew' in cron_job:
+                    job_desc = "Update Preprocessing Data"
+                cron_list.append({
+                    'job_description':job_desc,
+                    'job_detail':cron_job,
+                    'schedule':cron_job[0:cron_job.index("p")-1],
+                    'schedule_readable':get_description(cron_job[0:cron_job.index("p")])
+                })
+    return cron_list
+
 @app.route('/cron/<metric>', methods=['GET', 'POST'])
 def index_cron(metric):
+    decoded_metric = base64.urlsafe_b64decode(metric).decode("ascii")
+    escaped_string = decoded_metric.translate(str.maketrans({
+                                        "%":  r"\%"}))
     if request.method == 'GET':
-        decoded_metric = base64.urlsafe_b64decode(metric).decode("ascii")
-        
-        escaped_string = decoded_metric.translate(str.maketrans({
-                                         "%":  r"\%"}))
-        stdin,stdout,stderr = client.exec_command(f"crontab -l | grep -F \"{escaped_string}\"")
-        cron_info = stdout.read().decode('utf-8').strip().split('\n')
-        cron_list = []
-
-        if len(cron_info) > 0:
-            print(cron_info)
-            for cron_job in cron_info:
-                if len(cron_job) > 0:
-                    job_desc = ''
-                    if 'train' in cron_job:
-                        job_desc = "Train Model"
-                    elif 'renew' in cron_job:
-                        job_desc = "Update Preprocessing Data"
-                    cron_list.append({
-                        'job_description':job_desc,
-                        'job_detail':cron_job,
-                        'schedule':cron_job[0:cron_job.index("p")-1],
-                        'schedule_readable':get_description(cron_job[0:cron_job.index("p")])
-                    })
-        return render_template('cron.html', crons = cron_list if cron_info else 'No Cron Available', metric=metric)
+        cron_list = get_cron(escaped_string)
+        return render_template('cron.html', crons = cron_list if cron_list else 'No Cron Available', metric=metric)
     elif request.method == 'POST':
         update_cron_tab(request)
-        return '', 204
+        cron_list = get_cron(escaped_string)
+        return {'crons':cron_list}
 
 @app.route('/about-us')
 def show_aboutus():
