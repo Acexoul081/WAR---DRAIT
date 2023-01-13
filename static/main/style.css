@@ -74,8 +74,9 @@ body {
 }
 
 .banner-frame{
-  /* max-width: 50%; */
+  margin: 0px 10px 0px 10px;
   border-radius: 5px;
+  height: 550px;
   width: 50em;
   background-color: rgb(192, 237, 255);
   display: flex;

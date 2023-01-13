@@ -1,3 +1,7 @@
+const toastTrigger = document.getElementById('liveToastBtn')
+const toastLiveExample = document.getElementById('liveToast')
+sessionStorage.reloadAfterPageLoad = false
+
 $('.update-cron-btn').click(function(e){
     e.preventDefault();
     var cron = $(this).parent().serializeArray()
@@ -8,6 +12,7 @@ $('.update-cron-btn').click(function(e){
         }
     });
     if (isCronValid) {
+        $('.update-cron-btn').attr("disabled", true)
         $.ajax({
             type: "POST",
             url: `/cron/${$(this).val()}`,
@@ -17,12 +22,24 @@ $('.update-cron-btn').click(function(e){
             //     // access_token: $("#access_token").val()
             // },
             success: function(result) {
-                console.log('update success')
-                window.location.reload()
+                sessionStorage.reloadAfterPageLoad = true;
+                // window.location.reload()
+                console.log(result)
             }
         });
     }else{
         alert("Invalid Cron Format")
+    }
+})
+
+$( function () {
+    sessionStorage.reloadAfterPageLoad = false
+    console.log(sessionStorage.reloadAfterPageLoad)
+    if ( sessionStorage.reloadAfterPageLoad ) {
+        $('.update-cron-btn').attr("disabled", false)
+        const toast = new bootstrap.Toast(toastLiveExample)
+        toast.show()
+        sessionStorage.reloadAfterPageLoad = false;
     }
 })
 
