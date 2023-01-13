@@ -18,7 +18,8 @@ $('.update-cron-btn').click(function(e){
             // },
             success: function(result) {
                 console.log('update success')
-                window.location.reload()
+                console.log(result)
+                // window.location.reload()
             }
         });
     }else{
