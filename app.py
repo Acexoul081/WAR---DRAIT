@@ -327,7 +327,7 @@ def index_cron(metric):
     elif request.method == 'POST':
         update_cron_tab(request)
         cron_list = get_cron(escaped_string)
-        return {'crons':cron_list}
+        return {'crons':cron_list, 'metric':metric}
 
 @app.route('/about-us')
 def show_aboutus():
