@@ -98,16 +98,18 @@ def show_metric(metric):
         model_version, version_history = get_model_version(metric, loss.iloc[0]['metric_datetime'].to_pydatetime())
 
         first_version = version_history.iloc[0]
-        mask = (value['metric_datetime'] < first_version.start_time)
-        value.loc[mask,'version'] = first_version.version
-        loss.loc[mask,'version'] = first_version.version
+        mask_value = (value['metric_datetime'] < first_version.start_time)
+        mask_loss = (loss['metric_datetime'] < first_version.start_time)
+        value.loc[mask_value,'version'] = first_version.version
+        loss.loc[mask_loss,'version'] = first_version.version
         for version_window in version_history.rolling(2):
             if version_window.shape[0] == 2:
                 start_version = version_window.iloc[0]
                 end_version = version_window.iloc[1]
-                mask = (value['metric_datetime'] >= start_version.start_time) & (value['metric_datetime'] <= end_version.start_time)
-                value.loc[mask,'version'] = start_version.version
-                loss.loc[mask,'version'] = start_version.version
+                mask_value = (value['metric_datetime'] >= start_version.start_time) & (value['metric_datetime'] <= end_version.start_time)
+                mask_loss = (loss['metric_datetime'] >= start_version.start_time) & (loss['metric_datetime'] <= end_version.start_time)
+                value.loc[mask_value,'version'] = start_version.version
+                loss.loc[mask_loss,'version'] = start_version.version
         value[['version']] = value[['version']].fillna(value=version_history.iloc[-1]['version'])
         loss[['version']] = loss[['version']].fillna(value=version_history.iloc[-1]['version'])
 
