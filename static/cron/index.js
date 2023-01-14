@@ -1,8 +1,5 @@
-const toastTrigger = document.getElementById('liveToastBtn')
-const toastLiveExample = document.getElementById('liveToast')
-sessionStorage.reloadAfterPageLoad = false
-
 function refreshCronButton(result){
+    alert("Update Schedule Success!")
     console.log('update success')
     console.log(result.crons)
     var cronContainer = document.getElementById("cron-section");
@@ -51,7 +48,6 @@ function refreshCronButton(result){
                 data: $(this).parent().serialize(),
                 success: function(result) {
                     refreshCronButton(result)
-                    alert("Update Schedule Success!")
                 }
             });
         }else{
@@ -63,6 +59,7 @@ function refreshCronButton(result){
 $('.update-cron-btn').click(function(e){
     e.preventDefault();
     console.log("masuk");
+    console.log($(this));
     var cron = $(this).parent().serializeArray()
     isCronValid = false
     $.each(cron, function(i, field) {
@@ -82,18 +79,6 @@ $('.update-cron-btn').click(function(e){
         });
     }else{
         alert("Invalid Cron Format")
-    }
-})
-
-
-$( function () {
-    sessionStorage.reloadAfterPageLoad = false
-    console.log(sessionStorage.reloadAfterPageLoad)
-    if ( sessionStorage.reloadAfterPageLoad ) {
-        $('.update-cron-btn').attr("disabled", false)
-        const toast = new bootstrap.Toast(toastLiveExample)
-        toast.show()
-        sessionStorage.reloadAfterPageLoad = false;
     }
 })
 

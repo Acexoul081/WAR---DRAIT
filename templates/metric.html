@@ -57,7 +57,11 @@
         <div class="chart" id="loss"></div>
         <div class="chart" id="preproc"></div>
 
-        <a href="{{ url_for('index_cron', metric=metric['key']) }}">SHOW CRON</a>
+        <div class="d-grid gap-2 col-2 mx-auto">
+            <a href="{{ url_for('index_cron', metric=metric['key']) }}" class="btn btn-primary">
+                SHOW CRON
+            </a>
+        </div>
     </div>
 </body>
 <div class="fixed-bottom">
