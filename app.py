@@ -75,7 +75,6 @@ def main_page():
     if transaction_metadata:
         for id, model in transaction_metadata.items():
             key_split = model['key'].split('|')
-            print(key_split)
             app_name = key_split[1]
             data_source = key_split[0]
             metric_type = key_split[7]
@@ -97,7 +96,11 @@ def show_metric(metric):
         value, loss = get_value(metric)
 
         model_version, version_history = get_model_version(metric, loss.iloc[0]['metric_datetime'].to_pydatetime())
-        
+
+        first_version = version_history.iloc[0]
+        mask = (value['metric_datetime'] < first_version.start_time)
+        value.loc[mask,'version'] = first_version.version
+        loss.loc[mask,'version'] = first_version.version
         for version_window in version_history.rolling(2):
             if version_window.shape[0] == 2:
                 start_version = version_window.iloc[0]
@@ -107,7 +110,6 @@ def show_metric(metric):
                 loss.loc[mask,'version'] = start_version.version
         value[['version']] = value[['version']].fillna(value=version_history.iloc[-1]['version'])
         loss[['version']] = loss[['version']].fillna(value=version_history.iloc[-1]['version'])
-        print(value)
 
         anomalies, threshold = get_anomalies(metric, loss)
         value_anomalies = value[value['metric_datetime'].isin(anomalies)]
@@ -262,11 +264,14 @@ def get_model_version(metric, first_date):
         first_date > db.version_timestamps.start_time
     )
     ).order_by(desc(db.version_timestamps.start_time)).first()
-
+    if first_version is None:
+        start_time = first_date
+    else:
+        start_time = first_version.start_time
     versions = db_session.query(db.version_timestamps).filter(
     and_(
         db.version_timestamps.metric_key == loss_metric_key,
-        db.version_timestamps.start_time >= first_version.start_time
+        db.version_timestamps.start_time >= start_time
     )
     ).order_by(asc(db.version_timestamps.start_time))
 
