@@ -4,7 +4,7 @@ import json
 import plotly
 import plotly.express as px
 import plotly.graph_objects as go
-from sqlalchemy import create_engine, asc, and_, func, text
+from sqlalchemy import create_engine, asc,desc, and_, func, text
 from sqlalchemy.orm import sessionmaker
 from paramiko import SSHClient, AutoAddPolicy
 import base64
@@ -96,12 +96,23 @@ def show_metric(metric):
         decoded_metric = base64.urlsafe_b64decode(metric).decode("ascii")
         value, loss = get_value(metric)
 
+        model_version, version_history = get_model_version(metric, loss.iloc[0]['metric_datetime'].to_pydatetime())
+        
+        for version_window in version_history.rolling(2):
+            if version_window.shape[0] == 2:
+                start_version = version_window.iloc[0]
+                end_version = version_window.iloc[1]
+                mask = (value['metric_datetime'] >= start_version.start_time) & (value['metric_datetime'] <= end_version.start_time)
+                value.loc[mask,'version'] = start_version.version
+                loss.loc[mask,'version'] = start_version.version
+        value[['version']] = value[['version']].fillna(value=version_history.iloc[-1]['version'])
+        loss[['version']] = loss[['version']].fillna(value=version_history.iloc[-1]['version'])
+        print(value)
+
         anomalies, threshold = get_anomalies(metric, loss)
         value_anomalies = value[value['metric_datetime'].isin(anomalies)]
         loss_anomalies = loss[loss['metric_datetime'].isin(anomalies)]
-
-        model_version = get_model_version(metric)
-
+                
         val_graph_json = create_value_graph(value, value_anomalies, 'metric_value')
         loss_graph_json = create_value_graph(loss, loss_anomalies, 'loss', threshold)
         preproc_graph_json = create_value_graph(loss, loss_anomalies, 'value')
@@ -146,8 +157,30 @@ def create_value_graph(dataset, anomalies, target_column, threshold=None):
     dataset = dataset.set_index('metric_datetime')
     dataset = dataset.resample('1T').mean()
     fig = go.Figure()
-    fig.add_trace(go.Scatter(x=dataset.index, y=dataset[target_column], name='Value Time Series'))
-    fig.add_trace(go.Scatter(x=anomalies['metric_datetime'], y=anomalies[target_column], mode='markers', name='Anomaly'))
+    fig.add_trace(go.Scatter(
+        x=dataset.index, 
+        y=dataset[target_column], 
+        name='Value Time Series',
+        hovertemplate=
+        '<b>Timestamp</b>: %{x}<br>'+
+        '<b>Value</b>: %{y}<br>'+
+        '<b>Model Version</b>: %{text}',
+        text=dataset['version']
+        )
+    )
+    fig.add_trace(go.Scatter(
+        x=anomalies['metric_datetime'], 
+        y=anomalies[target_column], 
+        mode='markers', 
+        name='Anomaly',
+        hovertemplate=
+        '<b>Timestamp</b>: %{x}<br>'+
+        '<b>Value</b>: %{y}<br>'+
+        '<b>Model Version</b>: %{text}',
+        text=anomalies['version'],
+        hoverlabel= {'font': {'color': 'white'}}
+        )
+    )
     if threshold:
         if session['threshold'] == 'static':
             fig.add_hline(y=threshold)
@@ -203,23 +236,43 @@ def get_value(metric):
     loss.rename(columns = {'timestamp':'metric_datetime'}, inplace = True)
     return value,loss
 
-def get_model_version(metric):
+def get_model_version(metric, first_date):
     global PORT, channel
     
     stub = model_service_pb2_grpc.ModelServiceStub(channel)
     request = get_model_status_pb2.GetModelStatusRequest()
     request.model_spec.name = metric
     result = stub.GetModelStatus(request, 5)  # 5 secs timeout
-    
+    result = json.loads(MessageToJson(result))
     # stub = prediction_service_pb2_grpc.PredictionServiceStub(channel)
     # request = get_model_metadata_pb2.GetModelMetadataRequest()
     # request.model_spec.name = metric
     # request.metadata_field.append("signature_def")
     # result = stub.GetModelMetadata(request, 5)  # 5 secs timeout
 
-    result = json.loads(MessageToJson(result))
+    db_session = Session()
+    if metric in infra_metadata:
+        loss_metric_key = infra_metadata[metric]['key']
+    else:
+        loss_metric_key = transaction_metadata[metric]['key']
+    
+    first_version = db_session.query(db.version_timestamps).filter(
+    and_(
+        db.version_timestamps.metric_key == loss_metric_key,
+        first_date > db.version_timestamps.start_time
+    )
+    ).order_by(desc(db.version_timestamps.start_time)).first()
 
-    return result['model_version_status']
+    versions = db_session.query(db.version_timestamps).filter(
+    and_(
+        db.version_timestamps.metric_key == loss_metric_key,
+        db.version_timestamps.start_time >= first_version.start_time
+    )
+    ).order_by(asc(db.version_timestamps.start_time))
+
+    versions = pd.read_sql(versions.statement, versions.session.bind)
+
+    return result['model_version_status'], versions
 
 def get_anomalies(metric, dataset):
     dataset['anomaly']=False

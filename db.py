@@ -161,4 +161,22 @@ class whitelists(base):
         self.created_by = created_by
         self.created_time = datetime.now()
         
+class version_timestamps(base):
+    __tablename__='udd_model_versions'
+    metric_key = Column(String(255), primary_key=True)
+    start_time = Column(DateTime)
+    version = Column(Integer, primary_key=True)
+    created_by = Column(String(255))
+    created_time = Column(DateTime)
+    updated_by = Column(String(255))
+    updated_time = Column(DateTime)
+
+
+    def __init__(self, metric_key, start_time, version, created_by):
+        self.metric_key = metric_key
+        self.start_time = start_time
+        self.version = version
+        self.created_by = created_by
+        self.created_time = datetime.now()
+
 base.metadata.create_all(engine)
