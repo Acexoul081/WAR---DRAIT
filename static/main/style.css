@@ -62,19 +62,15 @@ body {
 }
 
 .model-frame{
-  /* max-width: 50%; */
+  margin: 0px 5px 0px 5px;
   width: 50em;
   display: flex;
-  /* background-color: bisque; */
-  /* margin: 0px 10px; */
-  /* display: flex; */
-  /* flex-wrap: wrap; */
   padding: 10px 0px;
   justify-content: center;
 }
 
 .banner-frame{
-  margin: 0px 10px 0px 10px;
+  margin: 0px 5px 0px 5px;
   border-radius: 5px;
   height: 550px;
   width: 50em;
