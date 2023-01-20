@@ -130,6 +130,8 @@ def show_metric(metric):
             'key': metric
         }
         
+        model_version = model_version[0:3]
+
         return render_template('metric.html', metric=metric_detail, valueGraph=val_graph_json, lossGraph=loss_graph_json, preprocGraph= preproc_graph_json, modelStatus=model_version)
 
     elif request.method == 'POST':
